@@ -1,9 +1,9 @@
 
 public class PCB implements Comparable {
 	private int pid, pCounter, IOCounter, burstTime, size, IOTime;
-	char state;
+	private State state;
 
-	public PCB(int pid, int burstTime, int IOTime, int size, char state) {
+	public PCB(int pid, int burstTime, int IOTime, int size, State state) {
 		this.pid = pid;
 		this.burstTime = burstTime;
 		this.IOTime = IOTime;
@@ -69,11 +69,11 @@ public class PCB implements Comparable {
 		IOTime = iOTime;
 	}
 
-	public char getState() {
+	public State getState() {
 		return state;
 	}
 
-	public void setState(char state) {
+	public void setState(State state) {
 		this.state = state;
 	}
 
