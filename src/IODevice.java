@@ -9,6 +9,7 @@ public class IODevice extends Thread {
 
     public IODevice() {
         this.currentProcess = null;
+        super.start();
     }
 
     @Override
