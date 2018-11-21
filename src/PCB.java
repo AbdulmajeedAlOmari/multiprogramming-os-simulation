@@ -29,7 +29,6 @@ public class PCB implements Comparable {
 	public int getPid() {
 		return pid;
 	}
-
 	public void setPid(int pid) {
 		this.pid = pid;
 	}
@@ -37,7 +36,6 @@ public class PCB implements Comparable {
 	public int getpCounter() {
 		return pCounter;
 	}
-
 	public void setpCounter(int pCounter) {
 		this.pCounter = pCounter;
 	}
@@ -45,7 +43,6 @@ public class PCB implements Comparable {
 	public int getIOCounter() {
 		return IOCounter;
 	}
-
 	public void setIOCounter(int iOCounter) {
 		IOCounter = iOCounter;
 	}
@@ -53,7 +50,6 @@ public class PCB implements Comparable {
 	public int getBurstTime() {
 		return burstTime;
 	}
-
 	public void setBurstTime(int burstTime) {
 		this.burstTime = burstTime;
 	}
@@ -61,7 +57,6 @@ public class PCB implements Comparable {
 	public int getSize() {
 		return size;
 	}
-
 	public void setSize(int size) {
 		this.size = size;
 	}
@@ -69,7 +64,6 @@ public class PCB implements Comparable {
 	public int getIOTime() {
 		return IOTime;
 	}
-
 	public void setIOTime(int iOTime) {
 		IOTime = iOTime;
 	}
@@ -77,7 +71,6 @@ public class PCB implements Comparable {
 	public State getState() {
 		return state;
 	}
-
 	public void setState(State state) {
 		this.state = state;
 	}
