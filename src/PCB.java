@@ -1,7 +1,12 @@
 
 public class PCB implements Comparable {
-	private int pid, pCounter, IOCounter, burstTime, size, IOTime;
-	private State state;
+	private int pid; //Process ID
+	private int pCounter; //Program Counter
+	private int IOCounter; //IO burst counter
+	private int burstTime; //CPU burst time
+	private int size; //Program full size in MB
+	private int IOTime; //IO burst time
+	private State state; //Process State
 
 	public PCB(int pid, int burstTime, int IOTime, int size, State state) {
 		this.pid = pid;
