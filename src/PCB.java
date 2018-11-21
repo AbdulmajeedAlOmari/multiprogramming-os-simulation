@@ -6,14 +6,14 @@ public class PCB implements Comparable {
 	private int burstTime; //CPU burst time
 	private int size; //Program full size in MB
 	private int IOTime; //IO burst time
-	private State state; //Process State
+	private ProcessState processState; //Process State
 
-	public PCB(int pid, int burstTime, int IOTime, int size, State state) {
+	public PCB(int pid, int burstTime, int IOTime, int size, ProcessState processState) {
 		this.pid = pid;
 		this.burstTime = burstTime;
 		this.IOTime = IOTime;
 		this.size = size;
-		this.state = state;
+		this.processState = processState;
 	}
 
 	public String toString() {
@@ -68,11 +68,11 @@ public class PCB implements Comparable {
 		IOTime = iOTime;
 	}
 
-	public State getState() {
-		return state;
+	public ProcessState getProcessState() {
+		return processState;
 	}
-	public void setState(State state) {
-		this.state = state;
+	public void setProcessState(ProcessState processState) {
+		this.processState = processState;
 	}
 
 }

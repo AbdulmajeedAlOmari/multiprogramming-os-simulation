@@ -1,4 +1,4 @@
-public enum State {
+public enum ProcessState {
     READY,
     RUNNING,
     WAITING,
