@@ -1,3 +1,6 @@
+import java.util.LinkedList;
+import java.util.Queue;
+
 /***
  * This class represents an IO device that handles any IO requests<br>
  * We chose to set this as a Thread class because in reality, the<br>
@@ -6,18 +9,23 @@
  */
 public class IODevice extends Thread {
     private PCB currentProcess;
+    private Queue<PCB> waitingList;
+    private boolean isRunning;
 
     public IODevice() {
         this.currentProcess = null;
+        this.waitingList = new LinkedList<>();
+        this.isRunning = false;
         super.start();
     }
 
     @Override
     public void run() {
+        //TODO check whether we need (isRunning) flag or shall we use (synchronized) keyword only
         //While OS is running, keep handling IO requests if available
         while(true) {
-            if(currentProcess != null) {
-                handleIOBurst();
+            if(this.currentProcess != null && !this.isRunning) {
+                handleIORequest();
             }
         }
     }
@@ -29,34 +37,49 @@ public class IODevice extends Thread {
      *     <li>There is a current process in the IO Device.</li>
      * </ul>
      */
-    public void handleIOBurst() {
-        //TODO check if we need to change the state *HERE*
-        this.currentProcess.setProcessState(ProcessState.WAITING);
+    private void handleIORequest() {
+        //Flag for the run method that it is processing something
+        this.isRunning = true;
 
-        //TODO change this to use Burst instead of attributes in PCB
+        //TODO use correct attributes from PCB
         while(currentProcess.getIOCounter() > 0) {
             int IOCounter = currentProcess.getIOCounter();
             currentProcess.setIOCounter(IOCounter - 1);
             currentProcess.setIOTime(currentProcess.getIOCounter() + 1);
 
-            //TODO remove debug
-            System.out.println("IO Device handling..");
             try {
                 //Wait for 1 millisecond
                 sleep(1);
             } catch(InterruptedException e) {
-                //An interrupt was received.
+                e.printStackTrace();
                 return;
             }
         }
 
         //TODO put process to ready queue again
         this.currentProcess.setProcessState(ProcessState.READY);
+
+        //TODO ask Ahmad about this
+        // Get next waiting process
+        if(waitingList.size() > 0) {
+            this.currentProcess = waitingList.poll();
+        }
+
+        //Flag for the run method that it finished the processing
+        this.isRunning = false;
     }
 
-    public void setCurrentProcess(PCB currentProcess) {
-        this.currentProcess = currentProcess;
+    public void addProcessToDevice(PCB process) {
+        // Set process state as (Waiting)
+        process.setProcessState(ProcessState.WAITING);
+
+        if(this.currentProcess == null)
+            this.currentProcess = process;
+        else
+            waitingList.add(process);
+
     }
 
+    public void setCurrentProcess(PCB currentProcess) { this.currentProcess = currentProcess; }
     public PCB getCurrentProcess() { return currentProcess; }
 }
