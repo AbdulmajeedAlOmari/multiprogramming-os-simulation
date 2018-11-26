@@ -45,7 +45,7 @@ public class RAM {
 
         PCB process = readyQ.remove();
 
-        if(usageA-process.getBurstTime() >= 0)
+        if(usageA-process.getCurrentBurst().getRemainingTime() >= 0)
             usageA -= usageA-process.getSize();
         else
             usage -= usage-process.getSize();
