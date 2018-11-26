@@ -1,17 +1,21 @@
 public class Burst {
-    private int time;
+    private int remainingTime;
     private BurstType type;
 
     public Burst(int time, BurstType type) {
-        this.time = time;
+        this.remainingTime = time;
         this.type = type;
+    }
+
+    int getRemainingTime() {
+        return this.remainingTime;
     }
 
     /***
      * @return new time value
      */
-    int decrementTime() {
-        return --this.time;
+    int decrementRemainingTime() {
+        return --this.remainingTime;
     }
 
     BurstType getType() {
