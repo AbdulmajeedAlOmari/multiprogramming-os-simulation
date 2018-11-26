@@ -41,12 +41,9 @@ public class IODevice extends Thread {
         //Flag for the run method that it is processing something
         this.isRunning = true;
 
-        //TODO use correct attributes from PCB
-        while(currentProcess.getIOCounter() > 0) {
-            int IOCounter = currentProcess.getIOCounter();
-            currentProcess.setIOCounter(IOCounter - 1);
-            currentProcess.setIOTime(currentProcess.getIOCounter() + 1);
-
+        while(currentProcess.getIOTotalTime() > 0) {
+            // Increment current
+            currentProcess.incrementIOTotalTime();
             try {
                 //Wait for 1 millisecond
                 sleep(1);
