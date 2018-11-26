@@ -9,7 +9,7 @@ import java.util.Queue;
  */
 public class IODevice extends Thread {
     private PCB currentProcess;
-    private Queue<PCB> waitingList;
+    private Queue<PCB> waitingList; //PCB in waiting state
     private boolean isRunning;
 
     public IODevice() {
@@ -23,11 +23,12 @@ public class IODevice extends Thread {
     public void run() {
         //TODO check whether we need (isRunning) flag or shall we use (synchronized) keyword only
         //While OS is running, keep handling IO requests if available
+        //TODO change to Listener
         while(true) {
-            if(this.currentProcess != null && !this.isRunning) {
+            if(currentProcess != null)
                 handleIORequest();
-            }
         }
+
     }
 
     /***
@@ -38,12 +39,10 @@ public class IODevice extends Thread {
      * </ul>
      */
     private void handleIORequest() {
-        //Flag for the run method that it is processing something
-        this.isRunning = true;
-
-        while(currentProcess.getIOTotalTime() > 0) {
-            // Increment current
+        while(currentProcess.getCurrentBurst().getRemainingTime() > 0) {
+            // Increment total IO time of process
             currentProcess.incrementIOTotalTime();
+
             try {
                 //Wait for 1 millisecond
                 sleep(1);
@@ -53,7 +52,8 @@ public class IODevice extends Thread {
             }
         }
 
-        //TODO put process to ready queue again
+        //TODO ask Abdulmajeed about adding a process back
+        RAM.addNewProcess(this.currentProcess);
         this.currentProcess.setProcessState(ProcessState.READY);
 
         //TODO ask Ahmad about this
@@ -61,9 +61,6 @@ public class IODevice extends Thread {
         if(waitingList.size() > 0) {
             this.currentProcess = waitingList.poll();
         }
-
-        //Flag for the run method that it finished the processing
-        this.isRunning = false;
     }
 
     public void addProcessToDevice(PCB process) {
