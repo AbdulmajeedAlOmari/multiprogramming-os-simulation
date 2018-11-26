@@ -1,2 +1,2 @@
-public class OpiratingSystem {
+public class OperatingSystem {
 }
