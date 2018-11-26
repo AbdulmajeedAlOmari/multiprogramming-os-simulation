@@ -5,6 +5,7 @@ public class PCB implements Comparable {
 	private int pid; //Process ID
 	private int pCounter; //Program Counter
 	private int IOTotalTime; //Total time of executed IO burst
+	private int CPUTotalTime; //Total time of executed CPU burst
 	private int size; //Program full size in MB
 	private ProcessState processState; //Process State
 	private Burst currentBurst;
@@ -27,7 +28,7 @@ public class PCB implements Comparable {
 	 * @return String
 	 */
 	public String toString() {
-		return "ID: " + pid + ". \n CPU time: " + burstTime + "ms \n Size: " + size + "Kb \n IO: " + IOTime + " ms.";
+		return "ID: " + pid + ". \n CPU time: " + CPUTotalTime + "ms \n Size: " + size + "Kb \n IO: " + IOTotalTime + " ms.";
 	}
 
 	/***
@@ -36,7 +37,7 @@ public class PCB implements Comparable {
 	 * @return Integer: can be 0, >0, <0
 	 */
 	public int compareTo(Object obj) {
-		return this.currentBurst.getTime() - ((PCB) obj).currentBurst.getTime();
+		return this.currentBurst.getRemainingTime() - ((PCB) obj).currentBurst.getRemainingTime();
 	}
 
 	Burst getNextBurst() {
@@ -60,9 +61,6 @@ public class PCB implements Comparable {
 
 	int getSize() { return size; }
 	void setSize(int size) { this.size = size; }
-
-	int getIOTime() { return IOTime; }
-	void setIOTime(int iOTime) { IOTime = iOTime; }
 
 	public ProcessState getProcessState() {
 		return processState;
