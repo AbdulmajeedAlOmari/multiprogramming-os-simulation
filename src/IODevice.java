@@ -10,12 +10,10 @@ import java.util.Queue;
 public class IODevice extends Thread {
     private PCB currentProcess;
     private Queue<PCB> waitingList; //PCB in waiting state
-    private boolean isRunning;
 
     public IODevice() {
         this.currentProcess = null;
         this.waitingList = new LinkedList<>();
-        this.isRunning = false;
         super.start();
     }
 
