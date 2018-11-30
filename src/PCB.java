@@ -1,7 +1,7 @@
-import java.util.LinkedList;
 import java.util.Queue;
 
 public class PCB implements Comparable {
+	//TODO check what exactly is needed and what is not
 	private int pid; //Process ID
 	private int pCounter; //Program Counter
 	private int IOTotalTime; //Total time of executed IO burst
