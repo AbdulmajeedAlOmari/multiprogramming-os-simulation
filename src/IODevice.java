@@ -10,20 +10,16 @@ import java.util.Queue;
 public class IODevice extends Thread {
     private PCB currentProcess;
     private Queue<PCB> waitingList; //PCB in waiting state
-    private boolean isRunning;
 
     public IODevice() {
         this.currentProcess = null;
         this.waitingList = new LinkedList<>();
-        this.isRunning = false;
         super.start();
     }
 
     @Override
     public void run() {
-        //TODO check whether we need (isRunning) flag or shall we use (synchronized) keyword only
         //While OS is running, keep handling IO requests if available
-        //TODO change to Listener
         while(true) {
             if(currentProcess != null)
                 handleIORequest();
@@ -41,7 +37,7 @@ public class IODevice extends Thread {
     private void handleIORequest() {
         while(currentProcess.getCurrentBurst().getRemainingTime() > 0) {
             // Increment total IO time of process
-            currentProcess.incrementIOTotalTime();
+            currentProcess.incrementIoTotalTime();
 
             try {
                 //Wait for 1 millisecond
@@ -64,9 +60,6 @@ public class IODevice extends Thread {
     }
 
     public void addProcessToDevice(PCB process) {
-        // Set process state as (Waiting)
-        process.setProcessState(ProcessState.WAITING);
-
         if(this.currentProcess == null)
             this.currentProcess = process;
         else
