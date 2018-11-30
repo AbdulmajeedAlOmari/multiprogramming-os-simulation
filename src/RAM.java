@@ -10,7 +10,7 @@ public class RAM {
 	private static Queue <PCB> waitingQ = new PriorityQueue<PCB>(); //different from I/O queue
 	
 	// to add new process
-	static boolean addNewProcess(PCB process){
+	static synchronized boolean addNewProcess(PCB process){
 		if(usage + process.getSize() > RAM_SIZE){
             process.setProcessState(ProcessState.WAITING);
             waitingQ.add(process);
@@ -25,7 +25,7 @@ public class RAM {
 
     //TODO Ask Abdulmajeed about this method and its conditions
 	// to add additional CPU for old process
-	static boolean addAdditionalProcess(PCB process){
+	static synchronized boolean addAdditionalProcess(PCB process){
 		if(usageA+process.getSize() < ADDITIONAL_PROCESS){
 			process.setProcessState(ProcessState.READY);
             readyQ.add(process);
@@ -39,7 +39,7 @@ public class RAM {
 	
 	// to serve from ready queue .. and check to add process form waiting queue ..
 	// read document point 6
-	static PCB deQueue(){
+	static synchronized PCB deQueue(){
 		if(readyQ.isEmpty())
 		    return null;
 
@@ -56,8 +56,8 @@ public class RAM {
 
         return process;
 	}
-	
-	public PCB retrieve(){
+
+	static PCB retrieve(){
 		return readyQ.peek(); // will return null if the queue is empty
 	}
 
