@@ -1,18 +1,36 @@
 import java.util.Queue;
 
 public class PCB implements Comparable {
-	//TODO check what exactly is needed and what is not
 	private int pid; //Process ID
-	private int pCounter; //Program Counter
-	private int IOTotalTime; //Total time of executed IO burst
-	private int CPUTotalTime; //Total time of executed CPU burst
-	private int size; //Program full size in MB
+	private String name; //Program name
+	private int loadedTime; //When it was loaded in Ready queue
+
+	private int cpuCounter; //Number of times this process became in RUNNING state
+	private int ioCounter; //Number of times this process became in WAITING state
+	private int ioTotalTime; //Total time of executed IO burst
+	private int cpuTotalTime; //Total time of executed CPU burst
+	private int waitingCounter; //Number of times this process was waiting for memory space
+	private int finishedTime; //The time when this process TERMINATED/KILLED
+
 	private ProcessState processState; //Process State
-	private Burst currentBurst;
+
+	private int size; //Program full size in MB
+
+	private Burst currentBurst; //The current burst in PCB (FCFS)
 	private Queue<Burst> burstQueue;
 
-	public PCB(int pid, int size, ProcessState processState, Queue<Burst> burstQueue) {
+	public PCB(int pid, String name, int loadedTime, int size, ProcessState processState, Queue<Burst> burstQueue) {
 		this.pid = pid;
+		this.name = name;
+		this.loadedTime = loadedTime;
+
+		this.cpuCounter = 0;
+		this.ioCounter = 0;
+		this.ioTotalTime = 0;
+		this.cpuTotalTime = 0;
+		this.waitingCounter = 0;
+		this.finishedTime = 0;
+
 		this.size = size;
 		this.processState = processState;
 
@@ -24,49 +42,58 @@ public class PCB implements Comparable {
 	}
 
 	/***
-	 * This method prints PCB as a String
-	 * @return String
+	 * This method prints PCB info as a String
+	 * a. Process ID
+	 * b. Program name
+	 * c. When it was loaded into the ready queue.
+	 * d. Number of times it was in the CPU.
+	 * e. Total time spent in the CPU
+	 * f. Number of times it performed an IO.
+	 * g. Total time spent in performing IO
+	 * h. Number of times it was waiting for memory.
+	 * i. Time it terminated or was killed
+	 * j. Its final state: Killed or Terminated
+	 * /////k. CPU Utilization/////
 	 */
 	public String toString() {
-		return "ID: " + pid + ". \n CPU time: " + CPUTotalTime + "ms \n Size: " + size + "Kb \n IO: " + IOTotalTime + " ms.";
+		return "/——————————¦¦[ " + name + " ]¦¦——————————\\"
+				+ "» ID: " + pid + ". \n» CPU time: " + cpuTotalTime
+				+ " ms \n» Size: " + size + " Kb \n» IO: " + ioTotalTime + " ms.\n"
+				+ "\\———————————¦-_END_-¦———————————/";
 	}
 
 	/***
 	 * This method will be used for PriorityQueue prioritization comparator
-	 * @param obj
-	 * @return Integer: can be 0, >0, <0
 	 */
 	public int compareTo(Object obj) {
 		return this.currentBurst.getRemainingTime() - ((PCB) obj).currentBurst.getRemainingTime();
 	}
 
-	Burst getNextBurst() {
+	/***
+	 * This method change the current burst to the next available one and returns it.
+	 * If there were no bursts it will return null.
+	 */
+	Burst nextBurst() {
 		this.currentBurst = this.burstQueue.poll();
 		return this.currentBurst;
 	}
 
+
 	// Getters/Setters
-	int getPid() { return pid; }
-	void setPid(int pid) { this.pid = pid; }
+	void setLoadedTime(int loadedTime) { this.loadedTime = loadedTime; }
 
-	int getpCounter() { return pCounter; }
-	void setpCounter(int pCounter) { this.pCounter = pCounter; }
+	void incrementCpuCounter() { this.cpuCounter++; }
+	void incrementIoCounter() { this.ioCounter++; }
+	void incrementIoTotalTime() { this.ioTotalTime++; }
+	void incrementCpuTotalTime() { this.cpuTotalTime++; }
+	void incrementWaitingCounter() { this.waitingCounter++; }
+	void setFinishedTime(int finishedTime) { this.finishedTime = finishedTime; }
 
-	//TODO do we need all of this?
-	int getIOTotalTime() { return this.IOTotalTime; }
-	void setIOTotalTime(int iOCounter) { this.IOTotalTime = iOCounter; }
-	void incrementIOTotalTime() { this.IOTotalTime++; }
-
-	Burst getCurrentBurst() { return this.currentBurst; }
+	ProcessState getProcessState() { return processState; }
+	void setProcessState(ProcessState processState) { this.processState = processState; }
 
 	int getSize() { return size; }
 	void setSize(int size) { this.size = size; }
 
-	public ProcessState getProcessState() {
-		return processState;
-	}
-	public void setProcessState(ProcessState processState) {
-		this.processState = processState;
-	}
-
+	Burst getCurrentBurst() { return this.currentBurst; }
 }

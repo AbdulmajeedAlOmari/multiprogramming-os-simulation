@@ -50,7 +50,7 @@ public class CPU extends Thread {
         // TODO handle processes memory size and manipulate it
 
         // Get the next burst and load it in PCB
-        Burst nextBurst = this.currentActiveProcess.getNextBurst();
+        Burst nextBurst = this.currentActiveProcess.nextBurst();
 
         if(nextBurst == null) {
             // This process finished all of its bursts normally

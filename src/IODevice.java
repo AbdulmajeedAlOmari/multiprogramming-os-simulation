@@ -39,7 +39,7 @@ public class IODevice extends Thread {
     private void handleIORequest() {
         while(currentProcess.getCurrentBurst().getRemainingTime() > 0) {
             // Increment total IO time of process
-            currentProcess.incrementIOTotalTime();
+            currentProcess.incrementIoTotalTime();
 
             try {
                 //Wait for 1 millisecond
