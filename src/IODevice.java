@@ -21,9 +21,7 @@ public class IODevice extends Thread {
 
     @Override
     public void run() {
-        //TODO check whether we need (isRunning) flag or shall we use (synchronized) keyword only
         //While OS is running, keep handling IO requests if available
-        //TODO change to Listener
         while(true) {
             if(currentProcess != null)
                 handleIORequest();
