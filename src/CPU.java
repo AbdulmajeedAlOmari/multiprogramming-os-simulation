@@ -11,7 +11,7 @@ public class CPU extends Thread {
     @Override
     public void run() {
         while(true) {
-            currentActiveProcess = RAM.deQueue();
+            currentActiveProcess = RAM.retrieve();
 
             if(currentActiveProcess != null) {
                 handleCurrentProcess();
@@ -75,6 +75,10 @@ public class CPU extends Thread {
             // Since the next burst is also CPU, we will continue processing it
             return;
         }
+
+        //Remove from ram and re add it again
+        RAM.deQueue();
+        RAM.addAdditionalProcess(process);
 
         this.currentActiveProcess = null;
     }
