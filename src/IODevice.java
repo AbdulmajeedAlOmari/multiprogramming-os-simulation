@@ -62,9 +62,6 @@ public class IODevice extends Thread {
     }
 
     public void addProcessToDevice(PCB process) {
-        // Set process state as (Waiting)
-        process.setProcessState(ProcessState.WAITING);
-
         if(this.currentProcess == null)
             this.currentProcess = process;
         else
