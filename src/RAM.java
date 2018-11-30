@@ -56,14 +56,14 @@ public class RAM {
 
         return process;
 	}
+	
+	public PCB retrieve(){
+		return readyQ.peek(); // will return null if the queue is empty
+	}
 
     static boolean isFull(){
         return usage == RAM_SIZE;
     }
-	public PCB retrieve(){
-		
-			return readyQ.peek(); // will return null if the queue is empty
-	}
 
 	// Getters/Setters
 	public int getUsage() { return usage; }
