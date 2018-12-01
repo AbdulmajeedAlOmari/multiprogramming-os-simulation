@@ -9,6 +9,7 @@ public class Clock extends Thread {
         this.initialTime = System.currentTimeMillis();
     }
 
+    //TODO remove longTermScheduler from here
     @Override
     public void run() {
         while(true) {

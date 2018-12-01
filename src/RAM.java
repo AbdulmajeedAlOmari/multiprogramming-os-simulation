@@ -1,23 +1,26 @@
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 
 public class RAM extends Thread {
 	private final static int RAM_SIZE = (int) (160*0.9);
-	private int usage;
+	private static int usage;
 	private final static int ADDITIONAL_PROCESS = (int) (160*0.1);
-	private int usageA;
-	private static Queue <PCB> readyQ = new PriorityQueue<PCB>();
-	private static Queue <PCB> jobQ = new ConcurrentLinkedQueue<PCB>();
-	private DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-	private Date date = new Date();
-	
+	private static int usageA;
+	private static Queue<PCB> readyQ = new PriorityBlockingQueue<>();
+	private static Queue<PCB> jobQ = new ConcurrentLinkedQueue<PCB>();
+	private static Clock clock;
+//	private DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+//	private Date date = new Date();
+
+	//TODO remove clock from constructor
+	RAM(Clock clock) {
+		RAM.clock = clock;
+	}
+
 	@Override
     public void run() {
-        //TODO check whether we need (isRunning) flag or shall we use (synchronized) keyword only
         //While OS is running, keep handling IO requests if available
-        //TODO change to Listener
         while(true) {
             
         	// if(currentProcess != null) << Question: Do we have use this line ?
@@ -40,15 +43,17 @@ public class RAM extends Thread {
 	}
 	
 	// to add new process   
-	public void longTermScheduler() throws InterruptedException {
+	static void longTermScheduler() throws InterruptedException {
 		
 		//This while loop add new process from jobQ to readyQ
 		while((!jobQ.isEmpty()) && usage + jobQ.peek().getSize()<=RAM_SIZE){ 
 			
 			//This statement add loaded time to process if this is new process to 90% of size 
 			//which is not additional process
-			if(!readyQ.contains(jobQ.peek().getPid())){ 
-			jobQ.peek().setLoadedTime(dateFormat.format(date));}
+			if(!readyQ.contains(jobQ.peek().getPid())){
+				//TODO fix this line
+				jobQ.peek().setLoadedTime(clock.getCurrentMs());
+			}
 			
 			usage = usage + jobQ.peek().getSize();
 			readyQ.add(jobQ.remove());
@@ -67,7 +72,7 @@ public class RAM extends Thread {
 	
 	//to serve from ready queue .. and check to add process form waiting(not I/O waiting) queue .. 
 	// read document point 6
-	public PCB deQueue(){
+	static PCB deQueue(){
 		if(!readyQ.isEmpty()){
 			PCB process = readyQ.remove();
 			if(process.getSize()>=0){
@@ -87,10 +92,10 @@ public class RAM extends Thread {
 		}
 		return null;
 	}
-	
-	public PCB retrieve(){//This method retrieve but not remove from Queue
-		
-			return readyQ.peek(); // will return null if the queue is empty
+
+	//This method retrieve but not remove from Queue
+	static PCB retrieve(){
+			return readyQ.peek();
 	}
 
 	public int getUsage() {
@@ -98,7 +103,7 @@ public class RAM extends Thread {
 	}
 
 	public void setUsage(int usage) {
-		this.usage = usage;
+		RAM.usage = usage;
 	}
 
 	public int getUsageA() {
@@ -106,7 +111,7 @@ public class RAM extends Thread {
 	}
 
 	public void setUsageA(int usageA) {
-		this.usageA = usageA;
+		RAM.usageA = usageA;
 	}
 
 	public static Queue<PCB> getReadyQ() {
