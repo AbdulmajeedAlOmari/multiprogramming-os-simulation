@@ -35,6 +35,9 @@ public class IODevice extends Thread {
      * </ul>
      */
     private void handleIORequest() {
+        // Increment the process IO counter
+        currentProcess.incrementIoCounter();
+
         while(currentProcess.getCurrentBurst().getRemainingTime() > 0) {
             // Increment total IO time of process
             currentProcess.incrementIoTotalTime();
@@ -49,7 +52,8 @@ public class IODevice extends Thread {
         }
 
         //TODO ask Abdulmajeed about adding a process back
-        RAM.addNewProcess(this.currentProcess);
+        //TODO fix this
+//        RAM.addNewProcess(this.currentProcess);
         this.currentProcess.setProcessState(ProcessState.READY);
 
         //TODO ask Ahmad about this
