@@ -9,14 +9,8 @@ public class RAM extends Thread {
 	private static int usageA;
 	private static Queue<PCB> readyQ = new PriorityBlockingQueue<>();
 	private static Queue<PCB> jobQ = new ConcurrentLinkedQueue<PCB>();
-	private static Clock clock;
 //	private DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 //	private Date date = new Date();
-
-	//TODO remove clock from constructor
-	RAM(Clock clock) {
-		RAM.clock = clock;
-	}
 
 	@Override
     public void run() {
@@ -52,7 +46,7 @@ public class RAM extends Thread {
 			//which is not additional process
 			if(!readyQ.contains(jobQ.peek().getPid())){
 				//TODO fix this line
-				jobQ.peek().setLoadedTime(clock.getCurrentMs());
+				jobQ.peek().setLoadedTime(OperatingSystem.clock.getCurrentMs());
 			}
 			
 			usage = usage + jobQ.peek().getSize();
