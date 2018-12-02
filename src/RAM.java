@@ -25,7 +25,7 @@ public class RAM extends SuperRAM {
     }
 
 	public boolean isFull(){
-		return super.getUsage() == super.getRamSize();
+		return super.getUsage() == SuperRAM.getRamSize();
 	}
 	
 	public boolean addToJobQ(PCB obj){
@@ -36,13 +36,13 @@ public class RAM extends SuperRAM {
 	void longTermScheduler() throws InterruptedException {
 		
 		//This while loop add new process from jobQ to readyQ
-		while((!jobQ.isEmpty()) && super.getUsage() + jobQ.peek().getSize()<=super.getRamSize()){ 
+		while((!jobQ.isEmpty()) && super.getUsage() + jobQ.peek().getSize() <= SuperRAM.getRamSize()){
 			
 			//This statement add loaded time to process if this is new process to 90% of size 
 			//which is not additional process
 			if(!readyQ.contains(jobQ.peek().getPid())){
 				//TODO fix this line
-				jobQ.peek().setLoadedTime(OperatingSystem.clock.getCurrentMs());
+				jobQ.peek().setLoadedTime(Clock.getCurrentMs());
 			}
 			
 //			usage = usage + jobQ.peek().getSize();
@@ -51,7 +51,7 @@ public class RAM extends SuperRAM {
 		
 		}
 		// This statement add additional process to 10% of size
-		if((!jobQ.isEmpty()) && super.getUsageA() + jobQ.peek().getSize() <= super.getAdditionalProcess() && readyQ.contains(jobQ.peek().getPid())){
+		if((!jobQ.isEmpty()) && super.getUsageA() + jobQ.peek().getSize() <= SuperRAM.getAdditionalProcess() && readyQ.contains(jobQ.peek().getPid())){
 			readyQ.add(jobQ.remove());
 			
 //			usageA = usageA + jobQ.peek().getSize();
