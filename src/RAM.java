@@ -3,7 +3,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
 public class RAM extends SuperRAM {
-	
 	private static Queue<PCB> readyQ = new PriorityBlockingQueue<>();
 	private static Queue<PCB> jobQ = new ConcurrentLinkedQueue<PCB>();
 //	private DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -34,7 +33,7 @@ public class RAM extends SuperRAM {
 	}
 	
 	// to add new process   
-	/*static*/ void longTermScheduler() throws InterruptedException {
+	void longTermScheduler() throws InterruptedException {
 		
 		//This while loop add new process from jobQ to readyQ
 		while((!jobQ.isEmpty()) && super.getUsage() + jobQ.peek().getSize()<=super.getRamSize()){ 
@@ -66,7 +65,7 @@ public class RAM extends SuperRAM {
 	
 	//to serve from ready queue .. and check to add process form waiting(not I/O waiting) queue .. 
 	// read document point 6
-	/*static*/ PCB deQueue(){
+	PCB deQueue(){
 		if(!readyQ.isEmpty()){
 			PCB process = readyQ.remove();
 			if(process.getSize()>=0){
@@ -87,12 +86,11 @@ public class RAM extends SuperRAM {
 		}
 		return null;
 	}
-
+  
 	//This method retrieve but not remove from Queue
 	static PCB retrieve(){
 			return readyQ.peek();
 	}
-
 
 	public static Queue<PCB> getReadyQ() {
 		return readyQ;

@@ -3,5 +3,13 @@
  * Time will be in Milliseconds
  */
 public class Clock {
-    //TODO make the clock
+    private long initialTime;
+
+    Clock() {
+        this.initialTime = System.currentTimeMillis();
+    }
+
+    int getCurrentMs() {
+        return (int) (System.currentTimeMillis() - this.initialTime);
+    }
 }

@@ -3,7 +3,7 @@ import java.util.Queue;
 public class PCB implements Comparable {
 	private int pid; //Process ID
 	private String name; //Program name
-	private String loadedTime; //When it was loaded in Ready queue
+	private int loadedTime; //When it was loaded in Ready queue
 
 	private int cpuCounter; //Number of times this process became in RUNNING state
 	private int ioCounter; //Number of times this process became in WAITING state
@@ -19,7 +19,7 @@ public class PCB implements Comparable {
 	private Burst currentBurst; //The current burst in PCB (FCFS)
 	private Queue<Burst> burstQueue;
 
-	public PCB(int pid, String name, String loadedTime, int size, ProcessState processState, Queue<Burst> burstQueue) {
+	public PCB(int pid, String name, int loadedTime, int size, ProcessState processState, Queue<Burst> burstQueue) {
 		this.pid = pid;
 		this.name = name;
 		this.loadedTime = loadedTime;
@@ -80,7 +80,7 @@ public class PCB implements Comparable {
 
 
 	// Getters/Setters
-	void setLoadedTime(String loadedTime) { this.loadedTime = loadedTime; }
+	void setLoadedTime(int loadedTime) { this.loadedTime = loadedTime; }
 
 	void incrementCpuCounter() { this.cpuCounter++; }
 	void incrementIoCounter() { this.ioCounter++; }

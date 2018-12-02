@@ -78,7 +78,8 @@ public class CPU extends Thread {
 
         //Remove from ram and re add it again
         RAM.deQueue();
-        RAM.addAdditionalProcess(process);
+        //TODO fix this
+//        RAM.addAdditionalProcess(process);
 
         this.currentActiveProcess = null;
     }
