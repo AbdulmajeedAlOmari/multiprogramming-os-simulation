@@ -1,12 +1,9 @@
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.PriorityBlockingQueue;
-// 
-public class RAM extends Thread {
-	private final static int RAM_SIZE = (int) (160*0.9);
-	private static int usage;
-	private final static int ADDITIONAL_PROCESS = (int) (160*0.1);
-	private static int usageA;
+
+public class RAM extends SuperRAM {
+	
 	private static Queue<PCB> readyQ = new PriorityBlockingQueue<>();
 	private static Queue<PCB> jobQ = new ConcurrentLinkedQueue<PCB>();
 //	private DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -29,7 +26,7 @@ public class RAM extends Thread {
     }
 
 	public boolean isFull(){
-		return usage == RAM_SIZE;
+		return super.getUsage() == super.getRamSize();
 	}
 	
 	public boolean addToJobQ(PCB obj){
@@ -37,10 +34,10 @@ public class RAM extends Thread {
 	}
 	
 	// to add new process   
-	static void longTermScheduler() throws InterruptedException {
+	/*static*/ void longTermScheduler() throws InterruptedException {
 		
 		//This while loop add new process from jobQ to readyQ
-		while((!jobQ.isEmpty()) && usage + jobQ.peek().getSize()<=RAM_SIZE){ 
+		while((!jobQ.isEmpty()) && super.getUsage() + jobQ.peek().getSize()<=super.getRamSize()){ 
 			
 			//This statement add loaded time to process if this is new process to 90% of size 
 			//which is not additional process
@@ -49,14 +46,17 @@ public class RAM extends Thread {
 				jobQ.peek().setLoadedTime(OperatingSystem.clock.getCurrentMs());
 			}
 			
-			usage = usage + jobQ.peek().getSize();
+//			usage = usage + jobQ.peek().getSize();
+			super.setUsage(getUsage() + jobQ.peek().getSize());
 			readyQ.add(jobQ.remove());
 		
 		}
 		// This statement add additional process to 10% of size
-		if((!jobQ.isEmpty()) && usageA + jobQ.peek().getSize() <= ADDITIONAL_PROCESS && readyQ.contains(jobQ.peek().getPid())){
+		if((!jobQ.isEmpty()) && super.getUsageA() + jobQ.peek().getSize() <= super.getAdditionalProcess() && readyQ.contains(jobQ.peek().getPid())){
 			readyQ.add(jobQ.remove());
-			usageA = usageA + jobQ.peek().getSize();
+			
+//			usageA = usageA + jobQ.peek().getSize();
+			super.setUsageA(getUsageA()+ jobQ.peek().getSize());
 		}
 		//This statement doing as point 6 says 
 		jobQ.peek().setProcessState(ProcessState.WAITING);
@@ -66,15 +66,16 @@ public class RAM extends Thread {
 	
 	//to serve from ready queue .. and check to add process form waiting(not I/O waiting) queue .. 
 	// read document point 6
-	static PCB deQueue(){
+	/*static*/ PCB deQueue(){
 		if(!readyQ.isEmpty()){
 			PCB process = readyQ.remove();
 			if(process.getSize()>=0){
 				
-				if(!(usageA-process.getSize()<0))
-					usageA = usageA-process.getSize();
+				if(!(super.getUsageA()-process.getSize()<0))
+//					usageA = usageA-process.getSize();
+					super.setUsageA(getUsageA()-process.getSize());
 				else
-					usage =usage-process.getSize();
+					super.setUsage(getUsage()-process.getSize());
 				
 			}
 			
@@ -92,21 +93,6 @@ public class RAM extends Thread {
 			return readyQ.peek();
 	}
 
-	public int getUsage() {
-		return usage;
-	}
-
-	public void setUsage(int usage) {
-		RAM.usage = usage;
-	}
-
-	public int getUsageA() {
-		return usageA;
-	}
-
-	public void setUsageA(int usageA) {
-		RAM.usageA = usageA;
-	}
 
 	public static Queue<PCB> getReadyQ() {
 		return readyQ;
