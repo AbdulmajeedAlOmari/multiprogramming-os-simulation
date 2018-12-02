@@ -15,12 +15,21 @@ public class CPU extends Thread {
 
             if(currentActiveProcess != null) {
                 handleCurrentProcess();
+            } else {
+                try {
+                    sleep(1);
+                } catch(InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                //This will increment the Clock by 1 millisecond
+                Clock.incrementMs();
             }
         }
     }
 
     private void handleCurrentProcess() {
-        //Rename the process for simplicity
+        // Rename the process for simplicity
         PCB process = this.currentActiveProcess;
 
         // Set its state to Running
@@ -36,7 +45,7 @@ public class CPU extends Thread {
             return;
         }
 
-        //Increment the CPU Counter for this process
+        // Increment the CPU Counter for this process
         process.incrementCpuCounter();
 
         // If it is CPU burst then process it
@@ -46,7 +55,7 @@ public class CPU extends Thread {
 
             // TODO hook it with GUI
 
-            //Increment the total time it was processed in CPU
+            // Increment the total time it was processed in CPU
             process.incrementCpuTotalTime();
 
             try {
@@ -55,6 +64,9 @@ public class CPU extends Thread {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            // This will increment the Clock by 1 millisecond
+            Clock.incrementMs();
         }
 
         // TODO handle processes memory size and manipulate it
@@ -63,7 +75,11 @@ public class CPU extends Thread {
         Burst nextBurst = process.nextBurst();
 
         if(nextBurst == null) {
-            // TODO save the time when it was TERMINATED/KILLED
+            // Save the termination time of the process
+            process.setFinishedTime(Clock.getCurrentMs());
+
+            //TODO add the process to Finished list in OperatingSystem
+
             // This process finished all of its bursts normally
             process.setProcessState(ProcessState.TERMINATED);
         } else if(nextBurst.getType().equals(BurstType.IO)) {
@@ -77,7 +93,7 @@ public class CPU extends Thread {
         }
 
         //Remove from ram and re add it again
-        RAM.deQueue();
+//        RAM.deQueue();
         //TODO fix this
 //        RAM.addAdditionalProcess(process);
 
