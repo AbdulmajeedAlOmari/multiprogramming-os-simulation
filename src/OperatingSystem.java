@@ -1,3 +1,11 @@
+import java.util.LinkedList;
+
 public class OperatingSystem {
-    public static final Clock clock = new Clock();
+    private static LinkedList<PCB> finishedProcesses = new LinkedList<>();
+
+
+    
+    public static void addFinishedProcess(PCB process) {
+        finishedProcesses.add(process);
+    }
 }
