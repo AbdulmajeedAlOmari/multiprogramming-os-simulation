@@ -1,3 +1,5 @@
+import Bursts.Burst;
+
 import java.util.Queue;
 
 public class PCB implements Comparable {

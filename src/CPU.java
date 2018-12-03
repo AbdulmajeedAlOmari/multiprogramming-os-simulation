@@ -1,3 +1,7 @@
+import Bursts.Burst;
+import Bursts.CPUBurst;
+import Bursts.IOBurst;
+
 public class CPU extends Thread {
     private IODevice ioDevice;
     private PCB currentActiveProcess;
@@ -39,7 +43,7 @@ public class CPU extends Thread {
         Burst currentBurst = process.getCurrentBurst();
 
         // Check if it is an IO burst or CPU burst
-        if(currentBurst.getType().equals(BurstType.IO)) {
+        if(currentBurst instanceof IOBurst) {
             ioDevice.addProcessToDevice(process);
             this.currentActiveProcess = null;
             return;
@@ -70,6 +74,7 @@ public class CPU extends Thread {
         }
 
         // TODO handle processes memory size and manipulate it
+        // TODO use Burst.getMemoryValue()
 
         // Get the next burst and load it in PCB
         Burst nextBurst = process.nextBurst();
@@ -82,11 +87,11 @@ public class CPU extends Thread {
 
             // This process finished all of its bursts normally
             process.setProcessState(ProcessState.TERMINATED);
-        } else if(nextBurst.getType().equals(BurstType.IO)) {
+        } else if(nextBurst instanceof IOBurst) {
             // The next burst is IO, so change its state to WAITING
             process.setProcessState(ProcessState.WAITING);
             ioDevice.addProcessToDevice(this.currentActiveProcess);
-        } else if (nextBurst.getType().equals(BurstType.CPU)) {
+        } else if (nextBurst instanceof CPUBurst) {
             // TODO check if we need this statement
             // Since the next burst is also CPU, we will continue processing it
             return;
