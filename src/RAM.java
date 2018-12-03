@@ -5,8 +5,13 @@ import java.util.concurrent.PriorityBlockingQueue;
 public class RAM extends SuperRAM {
 	private static Queue<PCB> readyQ = new PriorityBlockingQueue<>();
 	private static Queue<PCB> jobQ = new ConcurrentLinkedQueue<PCB>();
+	private static IODevice device;
 //	private DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 //	private Date date = new Date();
+
+	RAM(IODevice device) {
+		this.device = device;
+	}
 
 	@Override
     public void run() {
@@ -86,7 +91,73 @@ public class RAM extends SuperRAM {
 		}
 		return null;
 	}
-  
+
+//	try {
+//		// To forbid errors from happening, pause the thread
+//		device.wait();
+//	} catch(InterruptedException e) {
+//		e.printStackTrace();
+//	}
+
+//	// Run the thread again
+//		device.notify();
+
+	private PCB getMaxProcess() {
+		LinkedList<PCB> waitingList = (LinkedList<PCB>) device.getWaitingList();
+		// Let the first process be the max size process
+		PCB maxPCB = waitingList.get(0);
+
+		for(int i = 1; i < waitingList.size(); i++) {
+			PCB currentPCB = waitingList.get(i);
+
+			// If current process size is greater than the max process
+			if(currentPCB.getSize() > maxPCB.getSize())
+				// Then, it is the new max process
+				maxPCB = currentPCB;
+		}
+
+		return maxPCB;
+	}
+
+	private void killProcessInWaitingQ(PCB process) {
+		LinkedList<PCB> waitingList = (LinkedList<PCB>) device.getWaitingList();
+		PCB currentProcess = null;
+
+		for(int i = 0; i < waitingList.size(); i++) {
+			currentProcess = waitingList.get(i);
+
+			// Did we find the process
+			if(currentProcess.getPid() == process.getPid()) {
+				// Remove it from IO device and save it in a variable
+				PCB removedProcess = waitingList.remove(i);
+
+				// Get process current size to subtract it from Usage
+				int sizeOfProcess = removedProcess.getSize();
+
+				subtractFromUsage(sizeOfProcess);
+
+				// Set state to KILLED
+				currentProcess.setProcessState(ProcessState.KILLED);
+
+				// Add process to finished list in OS
+				OperatingSystem.addFinishedProcess(currentProcess);
+				break;
+			}
+		}
+	}
+
+	private void subtractFromUsage(int size) {
+		// Check if we have enough UsageA to subtract from
+		if(super.getUsageA() - size >= 0) {
+			int newSizeOfUsage = super.getUsageA() - size;
+			super.setUsageA(newSizeOfUsage);
+		} else {
+			// If not, then subtract from normal Usage
+			int newSizeOfUsage = super.getUsage() - size;
+			super.setUsage(newSizeOfUsage);
+		}
+	}
+
 	//This method retrieve but not remove from Queue
 	static PCB retrieve(){
 			return readyQ.peek();

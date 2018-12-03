@@ -73,4 +73,5 @@ public class IODevice extends Thread {
 
     public void setCurrentProcess(PCB currentProcess) { this.currentProcess = currentProcess; }
     public PCB getCurrentProcess() { return currentProcess; }
+    Queue<PCB> getWaitingList() { return waitingList; }
 }
