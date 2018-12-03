@@ -1,7 +1,7 @@
 package Bursts;
 
 public class IOBurst extends Burst {
-    IOBurst(int time) {
+    public IOBurst(int time) {
         super(time);
     }
 }
