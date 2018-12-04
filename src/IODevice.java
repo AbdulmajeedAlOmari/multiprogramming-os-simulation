@@ -21,8 +21,16 @@ public class IODevice extends Thread {
     public void run() {
         //While OS is running, keep handling IO requests if available
         while(true) {
-            if(currentProcess != null)
+            if(currentProcess != null) {
                 handleIORequest();
+            } else {
+                //sleep for 1 millisecond
+                try {
+                    sleep(1);
+                } catch(InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
     }
@@ -42,21 +50,21 @@ public class IODevice extends Thread {
             // Increment total IO time of process
             currentProcess.incrementIoTotalTime();
 
+            // Decrement the process IO burst
+            currentProcess.getCurrentBurst().decrementRemainingTime();
+
             try {
                 //Wait for 1 millisecond
                 sleep(1);
             } catch(InterruptedException e) {
                 e.printStackTrace();
-                return;
             }
         }
 
-        //TODO ask Abdulmajeed about adding a process back
-        //TODO fix this
-//        RAM.addNewProcess(this.currentProcess);
         this.currentProcess.setProcessState(ProcessState.READY);
+        //TODO add the process to RAM again
 
-        //TODO ask Ahmad about this
+
         // Get next waiting process
         if(waitingList.size() > 0) {
             this.currentProcess = waitingList.poll();

@@ -5,10 +5,12 @@ import Bursts.IOBurst;
 public class CPU extends Thread {
     private IODevice ioDevice;
     private PCB currentActiveProcess;
+    private RAM ram;
 
-    CPU() {
+    CPU(RAM ram) {
         this.ioDevice = new IODevice();
         this.currentActiveProcess = null;
+        this.ram = ram;
         start();
     }
 
@@ -79,28 +81,22 @@ public class CPU extends Thread {
         // Get the next burst and load it in PCB
         Burst nextBurst = process.nextBurst();
 
+        // Remove the process from RAM
+        ram.removeProcess(this.currentActiveProcess);
+
         if(nextBurst == null) {
             // Save the termination time of the process
             process.setFinishedTime(Clock.getCurrentMs());
 
-            //TODO add the process to Finished list in OperatingSystem
-
             // This process finished all of its bursts normally
             process.setProcessState(ProcessState.TERMINATED);
+
+            OperatingSystem.addFinishedProcess(process);
         } else if(nextBurst instanceof IOBurst) {
             // The next burst is IO, so change its state to WAITING
             process.setProcessState(ProcessState.WAITING);
             ioDevice.addProcessToDevice(this.currentActiveProcess);
-        } else if (nextBurst instanceof CPUBurst) {
-            // TODO check if we need this statement
-            // Since the next burst is also CPU, we will continue processing it
-            return;
         }
-
-        //Remove from ram and re add it again
-//        RAM.deQueue();
-        //TODO fix this
-//        RAM.addAdditionalProcess(process);
 
         this.currentActiveProcess = null;
     }

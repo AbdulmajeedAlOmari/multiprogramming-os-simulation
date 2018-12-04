@@ -128,11 +128,11 @@ public class RAM extends SuperRAM {
 
 			// Did we find the process
 			if(currentProcess.getPid() == process.getPid()) {
-				// Remove it from IO device and save it in a variable
-				PCB removedProcess = waitingList.remove(i);
+				// Remove it from IO device
+				waitingList.remove(i);
 
 				// Get process current size to subtract it from Usage
-				int sizeOfProcess = removedProcess.getSize();
+				int sizeOfProcess = currentProcess.getSize();
 
 				subtractFromUsage(sizeOfProcess);
 
@@ -158,6 +158,19 @@ public class RAM extends SuperRAM {
 		}
 	}
 
+	void removeProcess(PCB process) {
+		LinkedList<PCB> readyList = (LinkedList<PCB>) readyQ;
+
+		for(int i = 0; i < readyList.size(); i++) {
+			if(readyList.get(i).getPid() == process.getPid()) {
+				readyList.remove(i);
+
+				subtractFromUsage(process.getSize());
+
+				break;
+			}
+		}
+	}
 	//This method retrieve but not remove from Queue
 	static PCB retrieve(){
 			return readyQ.peek();
