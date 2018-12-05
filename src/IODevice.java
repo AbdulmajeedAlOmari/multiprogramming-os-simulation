@@ -1,5 +1,5 @@
-import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /***
  * This class represents an IO device that handles any IO requests<br>
@@ -8,19 +8,21 @@ import java.util.Queue;
  * next process.
  */
 public class IODevice extends Thread {
-    private PCB currentProcess;
-    private Queue<PCB> waitingList; //PCB in waiting state
+    private static PCB currentProcess;
+    private static Queue<PCB> waitingList; //PCB in waiting state
 
     public IODevice() {
-        this.currentProcess = null;
-        this.waitingList = new LinkedList<>();
-        super.start();
+        currentProcess = null;
+        waitingList = new ConcurrentLinkedQueue<>();
+//        super.start();
     }
 
     @Override
     public void run() {
         //While OS is running, keep handling IO requests if available
         while(true) {
+        	currentProcess = waitingList.poll();
+        	
             if(currentProcess != null) {
                 handleIORequest();
             } else {
@@ -45,14 +47,17 @@ public class IODevice extends Thread {
     private void handleIORequest() {
         // Increment the process IO counter
         currentProcess.incrementIoCounter();
-
+        
+//        System.out.print("["+currentProcess.getPid()+"] (" + currentProcess.getCurrentBurst().getRemainingTime()+ ") -->\t");
+        
         while(currentProcess.getCurrentBurst().getRemainingTime() > 0) {
             // Increment total IO time of process
             currentProcess.incrementIoTotalTime();
 
             // Decrement the process IO burst
             currentProcess.getCurrentBurst().decrementRemainingTime();
-
+            
+//            System.out.print(currentProcess.getCurrentBurst().getRemainingTime()+"\t");
             try {
                 //Wait for 1 millisecond
                 sleep(1);
@@ -60,26 +65,18 @@ public class IODevice extends Thread {
                 e.printStackTrace();
             }
         }
-
-        this.currentProcess.setProcessState(ProcessState.READY);
-        //TODO add the process to RAM again
-
-
-        // Get next waiting process
-        if(waitingList.size() > 0) {
-            this.currentProcess = waitingList.poll();
-        }
+//        System.out.println();
+        currentProcess.setProcessState(ProcessState.READY);
+        
+//        System.out.println(currentProcess.getPid() +" <---- FINISHED IO");
+        RAM.addToReadyQ(currentProcess);
     }
 
     public void addProcessToDevice(PCB process) {
-        if(this.currentProcess == null)
-            this.currentProcess = process;
-        else
-            waitingList.add(process);
-
+    	waitingList.add(process);
     }
 
-    public void setCurrentProcess(PCB currentProcess) { this.currentProcess = currentProcess; }
+    public void setCurrentProcess(PCB currentProcess) { IODevice.currentProcess = currentProcess; }
     public PCB getCurrentProcess() { return currentProcess; }
     Queue<PCB> getWaitingList() { return waitingList; }
 }

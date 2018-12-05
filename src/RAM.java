@@ -26,6 +26,7 @@ public class RAM extends Thread {
 			try {
 				longTermScheduler();
 			} catch (InterruptedException e) {
+				System.out.println("ERROR OCCURED");
 				e.printStackTrace();
 			}
         }
@@ -45,17 +46,26 @@ public class RAM extends Thread {
 	
 	// to add new process   
 	void longTermScheduler() throws InterruptedException {
-		// Stop the device
-		device.wait();
-		
 		// Check for deadlock
-		if(!waitingForAllocation.isEmpty() && readyQ.isEmpty() && isEnough(waitingForAllocation.peek().getSize())) {
+		if(!waitingForAllocation.isEmpty() && readyQ.isEmpty()
+				&& !isEnough(waitingForAllocation.peek().getSize())
+				&& !device.getWaitingList().isEmpty()) {
+			System.out.println("Deadlock solved for: [ " + waitingForAllocation.peek().getPid() + " ]");
+			
+			synchronized (device) {
+				// Stop the device
+				Thread.sleep(5);
+			}
+			
 			PCB maxProcess = getMaxProcess();
 			killProcessInWaitingQ(maxProcess);
+			
+			
+			synchronized (device) {
+				// Start the device
+				device.notify();
+			}
 		}
-		
-		// Start the device
-		device.notify();
 		
 		// Add waiting processes
 		while(!waitingForAllocation.isEmpty() && isEnough(waitingForAllocation.peek().getSize())) {
@@ -90,12 +100,18 @@ public class RAM extends Thread {
 	}
 
 	private PCB getMaxProcess() {
-		LinkedList<PCB> waitingList = (LinkedList<PCB>) device.getWaitingList();
+		System.out.println("Waiting SIZE: " + device.getWaitingList().size());
+		System.out.println("Ready SIZE: " + readyQ.size());
+		System.out.println("Usage: " + getUsage());
+		System.out.println("UsageA: " + getUsageA());
+		
+		Object[] waitingList = device.getWaitingList().toArray();
+		
 		// Let the first process be the max size process
-		PCB maxPCB = waitingList.get(0);
+		PCB maxPCB = (PCB) waitingList[0];
 
-		for(int i = 1; i < waitingList.size(); i++) {
-			PCB currentPCB = waitingList.get(i);
+		for(int i = 1; i < waitingList.length; i++) {
+			PCB currentPCB = (PCB) waitingList[i];
 
 			// If current process size is greater than the max process
 			if(currentPCB.getSize() > maxPCB.getSize())
@@ -107,30 +123,31 @@ public class RAM extends Thread {
 	}
 
 	private void killProcessInWaitingQ(PCB process) {
-		LinkedList<PCB> waitingList = (LinkedList<PCB>) device.getWaitingList();
-		PCB currentProcess = null;
+//		Object[] waitingList =device.getWaitingList().toArray();
+//		PCB currentProcess = null;
+		System.out.println("removing "+device.getWaitingList().remove(process));
 
-		for(int i = 0; i < waitingList.size(); i++) {
-			currentProcess = waitingList.get(i);
-
-			// Did we find the process
-			if(currentProcess.getPid() == process.getPid()) {
+//		for(int i = 0; i < waitingList.length; i++) {
+//			currentProcess =(PCB) waitingList[i];
+//
+//			// Did we find the process
+//			if(currentProcess.getPid() == process.getPid()) {
 				// Remove it from IO device
-				waitingList.remove(i);
+//				waitingList.remove(i);
 
 				// Get process current size to subtract it from Usage
-				int sizeOfProcess = currentProcess.getSize();
+				int sizeOfProcess = process.getSize();
 
 				subtractFromUsage(sizeOfProcess);
 
 				// Set state to KILLED
-				currentProcess.setProcessState(ProcessState.KILLED);
+				process.setProcessState(ProcessState.KILLED);
 
 				// Add process to finished list in OS
-				OperatingSystem.addFinishedProcess(currentProcess);
-				break;
-			}
-		}
+				OperatingSystem.addFinishedProcess(process);
+				
+//			}
+//		}
 	}
 
 	private void subtractFromUsage(int size) {
@@ -193,7 +210,7 @@ public class RAM extends Thread {
 	}
 	//This method retrieve but not remove from Queue
 	static PCB retrieve(){
-			return readyQ.peek();
+		return readyQ.peek();
 	}
 
 	public static Queue<PCB> getReadyQ() {

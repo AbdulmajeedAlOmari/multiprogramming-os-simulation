@@ -7,13 +7,13 @@ import Bursts.IOBurst;
 
 public class FileHandler {
 
-	public static void readFile() {
+	public static LinkedList<PCB> readFile() {
 		String processID, bursTime, processSize, IOTime;
 		String line;
 		LinkedList<PCB> processes = new LinkedList<>();
 
 		try {
-			BufferedReader bfr = new BufferedReader(new FileReader("C:\\Users\\A.N\\Desktop\\cpumemoryio.txt"));
+			BufferedReader bfr = new BufferedReader(new FileReader("C:\\Users\\WELCOM\\Desktop\\CSC227\\project\\cpumemoryio.txt"));
 			bfr.readLine();
 			while ((line = bfr.readLine()) != null) {
 
@@ -53,7 +53,7 @@ public class FileHandler {
 
 				CPUBurst currentBurst = (CPUBurst) bursts.peek();
 
-				PCB process = new PCB(pid, String.valueOf(pid), 0, currentBurst.getMemoryValue(), ProcessState.NEW,
+				PCB process = new PCB(pid, String.valueOf(pid), 0, currentBurst.getMemoryValue(), ProcessState.WAITING,
 						bursts);
 
 				processes.add(process);
@@ -64,26 +64,26 @@ public class FileHandler {
 			e.printStackTrace();
 		}
 
-		for(PCB p : processes) {
-			System.out.println("--- " + p.getPid() + " ---");
-			CPUBurst first = (CPUBurst) p.getCurrentBurst();
-			System.out.print(first.getRemainingTime() + "\t");
-			System.out.print(first.getMemoryValue() + "\t");
-			
-			Queue<Burst> bursts = p.burstQueue;
-			
-			while(bursts.peek() != null) {
-				Burst current = bursts.poll();
-				if(current instanceof CPUBurst) {
-					CPUBurst cpu = (CPUBurst) current;
-					System.out.print(cpu.getRemainingTime() + "\t");
-					System.out.print(cpu.getMemoryValue() + "\t");
-				} else {
-					System.out.print(current.getRemainingTime() + "\t");
-				}
-			}
-			System.out.println();
-		}
+//		for(PCB p : processes) {
+//			System.out.println("--- " + p.getPid() + " ---");
+//			CPUBurst first = (CPUBurst) p.getCurrentBurst();
+//			System.out.print(first.getRemainingTime() + "\t");
+//			System.out.print(first.getMemoryValue() + "\t");
+//			
+//			Queue<Burst> bursts = p.burstQueue;
+//			
+//			while(bursts.peek() != null) {
+//				Burst current = bursts.poll();
+//				if(current instanceof CPUBurst) {
+//					CPUBurst cpu = (CPUBurst) current;
+//					System.out.print(cpu.getRemainingTime() + "\t");
+//					System.out.print(cpu.getMemoryValue() + "\t");
+//				} else {
+//					System.out.print(current.getRemainingTime() + "\t");
+//				}
+//			}
+//			System.out.println();
+//		}
 
 		// while)
 		// System.out.println(num);
@@ -107,9 +107,25 @@ public class FileHandler {
 		// System.out.print(infotmation + "\t");
 		// System.out.println();
 		// }
+		
+		return processes;
 
 	}
-
+	
+	public void writeFile(LinkedList<PCB> finishedProcesses){
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter("OS_Output.txt"));
+			writer.write("Hi");
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+//	public static LinkedList<PCB> readFile() {
+//		
+//	}
 	/*
 	 * private static void outtpt() {
 	 * 
@@ -142,7 +158,7 @@ public class FileHandler {
 	 * FileWriter("Processes.txt")); bfw.close(); } catch (Exception e) {
 	 * System.out.println(e.getMessage()); } }
 	 */
-	public static void main(String[] args) {
-		readFile();
-	}
+//	public static void main(String[] args) {
+//		readFile();
+//	}
 }

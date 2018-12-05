@@ -19,7 +19,7 @@ public class PCB implements Comparable {
 	private int size; //Program full size in MB
 
 	private Burst currentBurst; //The current burst in PCB (FCFS)
-	private Queue<Burst> burstQueue;
+	 Queue<Burst> burstQueue;
 
 	public PCB(int pid, String name, int loadedTime, int size, ProcessState processState, Queue<Burst> burstQueue) {
 		this.pid = pid;

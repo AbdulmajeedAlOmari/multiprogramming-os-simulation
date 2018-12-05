@@ -7,17 +7,16 @@ public class CPU extends Thread {
     private PCB currentActiveProcess;
     private RAM ram;
 
-    CPU(RAM ram) {
-        this.ioDevice = new IODevice();
-        this.currentActiveProcess = null;
+    CPU(IODevice ioDevice, RAM ram) {
+        this.ioDevice = ioDevice;
         this.ram = ram;
-        start();
+        this.currentActiveProcess = null;
     }
 
     @Override
     public void run() {
         while(true) {
-            currentActiveProcess = RAM.retrieve();
+            currentActiveProcess = RAM.getReadyQ().poll();
 
             if(currentActiveProcess != null) {
                 handleCurrentProcess();
@@ -43,13 +42,6 @@ public class CPU extends Thread {
 
         // Get its first burst
         Burst currentBurst = process.getCurrentBurst();
-
-        // Check if it is an IO burst or CPU burst
-        if(currentBurst instanceof IOBurst) {
-            ioDevice.addProcessToDevice(process);
-            this.currentActiveProcess = null;
-            return;
-        }
 
         // Increment the CPU Counter for this process
         process.incrementCpuCounter();
@@ -77,27 +69,32 @@ public class CPU extends Thread {
 
         // TODO handle processes memory size and manipulate it
         // TODO use Burst.getMemoryValue()
-
+        
         // Get the next burst and load it in PCB
         Burst nextBurst = process.nextBurst();
 
         // Remove the process from RAM
-        ram.removeProcess(this.currentActiveProcess);
-
+//        ram.removeProcess(this.currentActiveProcess);
+        
+        
         if(nextBurst == null) {
             // Save the termination time of the process
             process.setFinishedTime(Clock.getCurrentMs());
 
+            System.out.println("Finsiehd --> " + process.getPid());
             // This process finished all of its bursts normally
             process.setProcessState(ProcessState.TERMINATED);
 
             OperatingSystem.addFinishedProcess(process);
-        } else if(nextBurst instanceof IOBurst) {
+        } else {
+        	// Handle IO Burst
+        	
+//        	System.out.println("["+process.getPid()+"] ("+process.getCurrentBurst().getRemainingTime()+") --> " + process.getPid());
             // The next burst is IO, so change its state to WAITING
             process.setProcessState(ProcessState.WAITING);
             ioDevice.addProcessToDevice(this.currentActiveProcess);
         }
-
+        
         this.currentActiveProcess = null;
     }
 }
