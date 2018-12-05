@@ -1,6 +1,8 @@
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import Bursts.Burst;
+
 /***
  * This class represents an IO device that handles any IO requests<br>
  * We chose to set this as a Thread class because in reality, the<br>
@@ -22,7 +24,7 @@ public class IODevice extends Thread {
         //While OS is running, keep handling IO requests if available
         while(true) {
         	currentProcess = waitingList.poll();
-        	
+//        	System.out.println("IO Device Queue size: " + waitingList.size());
             if(currentProcess != null) {
                 handleIORequest();
             } else {
@@ -68,8 +70,25 @@ public class IODevice extends Thread {
 //        System.out.println();
         currentProcess.setProcessState(ProcessState.READY);
         
-//        System.out.println(currentProcess.getPid() +" <---- FINISHED IO");
-        RAM.addToReadyQ(currentProcess);
+        // Get next burst
+        Burst nextBurst = currentProcess.nextBurst();
+        
+        if(nextBurst == null) {
+        	 // Save the termination time of the process
+        	currentProcess.setFinishedTime(Clock.getCurrentMs());
+
+            System.out.println("Finsiehd --> " + currentProcess.getPid());
+            // This process finished all of its bursts normally
+            currentProcess.setProcessState(ProcessState.TERMINATED);
+            
+            RAM.subtractFromUsage(currentProcess.getSize());
+            
+            OperatingSystem.addFinishedProcess(currentProcess);
+        } else {
+        	if(currentProcess == null)
+            	System.out.println("NULL EXCEPTION");
+        	RAM.addToReadyQ(currentProcess);
+        }
     }
 
     public void addProcessToDevice(PCB process) {

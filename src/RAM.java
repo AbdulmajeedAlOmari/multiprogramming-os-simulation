@@ -2,6 +2,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import Bursts.CPUBurst;
+
 public class RAM extends Thread {
 	private static Queue<PCB> readyQ = new PriorityBlockingQueue<>();
 	private static Queue<PCB> waitingForAllocation = new ConcurrentLinkedQueue<>();
@@ -11,7 +13,7 @@ public class RAM extends Thread {
 	public final static int ADDITIONAL_PROCESS = (int) (160*0.1);
 	private static int usageA;
 	
-	private static IODevice device;
+	public static IODevice device;
 
 	RAM(IODevice device) {
 		RAM.device = device;
@@ -71,7 +73,11 @@ public class RAM extends Thread {
 		while(!waitingForAllocation.isEmpty() && isEnough(waitingForAllocation.peek().getSize())) {
 			PCB process = waitingForAllocation.poll();
 			
-			readyQ.add(process);
+			if(process.getCurrentBurst() instanceof CPUBurst) {
+				readyQ.add(process);
+			} else {
+				device.addProcessToDevice(process);
+			}
 			
 			addToUsage(process.getSize());
 		}
@@ -150,7 +156,12 @@ public class RAM extends Thread {
 //		}
 	}
 
-	private void subtractFromUsage(int size) {
+	public static void addToWaitingQ(PCB process) {
+		System.out.println("Converting process ("+ process.getPid() +") to WAITING for allocation");
+		waitingForAllocation.add(process);
+	}
+	
+	public synchronized static void subtractFromUsage(int size) {
 		// Check if we have enough UsageA to subtract from
 		if(usageA - size >= 0) {
 			int newSizeOfUsage = usageA - size;
@@ -162,7 +173,7 @@ public class RAM extends Thread {
 		}
 	}
 	
-	private boolean addToUsage(int size) {
+	public synchronized static boolean addToUsage(int size) {
 		if(usage + size > RAM_SIZE)
 			return false;
 		
@@ -171,7 +182,7 @@ public class RAM extends Thread {
 		return true;
 	}
 	
-	private boolean addToUsageA(int size) {
+	public synchronized static boolean addToUsageA(int size) {
 		if(usageA + size > ADDITIONAL_PROCESS)
 			return false;
 		
@@ -187,24 +198,7 @@ public class RAM extends Thread {
 			System.out.println("DID NOT FIND PROCESS!");
 		}
 	}
-	
-	public boolean findByPid(Queue<PCB> Q,int pid){
-		Queue<Integer> s = new PriorityBlockingQueue<Integer>();
-		Queue<PCB> alterQueue = new PriorityBlockingQueue<PCB>();
-		while (!Q.isEmpty()){
-			PCB p = Q.remove();
-			s.add(p.getPid());
-			alterQueue.add(p);
-		}
-		if(s.contains(pid)){
-			while(!alterQueue.isEmpty())
-				Q.add(alterQueue.remove());
-			return true;}
-		while(!alterQueue.isEmpty())
-			Q.add(alterQueue.remove());
-		return false;
-	}
-	
+		
 	private boolean isEnough(int size) {
 		return size + usage <= RAM_SIZE;
 	}

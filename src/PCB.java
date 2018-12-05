@@ -7,10 +7,10 @@ public class PCB implements Comparable {
 	private String name; //Program name
 	private int loadedTime; //When it was loaded in Ready queue
 
-	private int cpuCounter; //Number of times this process became in RUNNING state
-	private int ioCounter; //Number of times this process became in WAITING state
-	private int ioTotalTime; //Total time of executed IO burst
-	private int cpuTotalTime; //Total time of executed CPU burst
+	public int cpuCounter; //Number of times this process became in RUNNING state
+	public int ioCounter; //Number of times this process became in WAITING state
+	public int ioTotalTime; //Total time of executed IO burst
+	public int cpuTotalTime; //Total time of executed CPU burst
 	private int waitingCounter; //Number of times this process was waiting for memory space
 	private int finishedTime; //The time when this process TERMINATED/KILLED
 
@@ -19,7 +19,7 @@ public class PCB implements Comparable {
 	private int size; //Program full size in MB
 
 	private Burst currentBurst; //The current burst in PCB (FCFS)
-	 Queue<Burst> burstQueue;
+	public Queue<Burst> burstQueue;
 
 	public PCB(int pid, String name, int loadedTime, int size, ProcessState processState, Queue<Burst> burstQueue) {
 		this.pid = pid;

@@ -11,7 +11,7 @@ public class OperatingSystem extends Thread {
     	
     	IODevice io = new IODevice();
     	RAM ram = new RAM(io);
-    	CPU cpu = new CPU(io, ram);
+    	CPU cpu = new CPU(io);
     	
 //        Clock clock =new Clock();
     	
@@ -36,9 +36,13 @@ public class OperatingSystem extends Thread {
     			System.exit(0);
     		}
     		
-    		System.out.println(finishedProcesses.size());
+    		System.out.println("Allocation: " + RAM.getWaitingQ().size());
+    		System.out.println("Ready: " + RAM.getReadyQ().size());
+    		System.out.println("IO: " + RAM.device.getWaitingList().size());
+    		System.out.println("FINISHED : "+finishedProcesses.size());
+    		
     		try {
-    			sleep(500);
+    			sleep(2000);
     		} catch (InterruptedException e) {
     			e.printStackTrace();
     		}

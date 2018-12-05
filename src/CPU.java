@@ -5,11 +5,9 @@ import Bursts.IOBurst;
 public class CPU extends Thread {
     private IODevice ioDevice;
     private PCB currentActiveProcess;
-    private RAM ram;
-
-    CPU(IODevice ioDevice, RAM ram) {
+    
+    CPU(IODevice ioDevice) {
         this.ioDevice = ioDevice;
-        this.ram = ram;
         this.currentActiveProcess = null;
     }
 
@@ -17,7 +15,9 @@ public class CPU extends Thread {
     public void run() {
         while(true) {
             currentActiveProcess = RAM.getReadyQ().poll();
-
+//            System.out.println("ReadyQSize: " + RAM.getReadyQ().size());
+//            System.out.println("RAM usage : " + RAM.getUsage());
+//            System.out.println("RAM usageA : " + RAM.getUsageA());
             if(currentActiveProcess != null) {
                 handleCurrentProcess();
             } else {
@@ -42,7 +42,10 @@ public class CPU extends Thread {
 
         // Get its first burst
         Burst currentBurst = process.getCurrentBurst();
-
+        
+        if(currentBurst instanceof IOBurst)
+        	System.out.println("IO BURST IN CPU!!!");
+        
         // Increment the CPU Counter for this process
         process.incrementCpuCounter();
 
@@ -66,16 +69,37 @@ public class CPU extends Thread {
             // This will increment the Clock by 1 millisecond
             Clock.incrementMs();
         }
-
-        // TODO handle processes memory size and manipulate it
-        // TODO use Burst.getMemoryValue()
+        
+        CPUBurst cpuBurst = null;
+        
+        try {
+        	cpuBurst = (CPUBurst) process.getCurrentBurst();
+        } catch(Exception e) {
+        	System.out.println("Process [" + process.getPid() +"] is the issue.\n");
+        	System.out.println("IO Counter: " + process.ioCounter);
+        	System.out.println("IO Time: " + process.ioTotalTime +" ms");
+        	System.out.println("CPU Counter: " + process.cpuCounter);
+        	System.out.println("CPU Time: " + process.cpuTotalTime +" ms");
+        	System.out.println("Next IO Time: " + process.getCurrentBurst().getRemainingTime());
+        	System.exit(-1);
+        }
+        
+        int memoryValue = cpuBurst.getMemoryValue();
+        
+        if(memoryValue != 0)
+        	handleMemoryChange(memoryValue);
         
         // Get the next burst and load it in PCB
         Burst nextBurst = process.nextBurst();
 
+        // If anything changed in the process, return
+        if(!process.getProcessState().equals(ProcessState.RUNNING)) {
+        	System.out.println("["+process.getPid()+"] is not RUNNING, its current state: ("+process.getProcessState()+"), returned...");
+        	return;
+        }
+        
         // Remove the process from RAM
 //        ram.removeProcess(this.currentActiveProcess);
-        
         
         if(nextBurst == null) {
             // Save the termination time of the process
@@ -86,15 +110,50 @@ public class CPU extends Thread {
             process.setProcessState(ProcessState.TERMINATED);
 
             OperatingSystem.addFinishedProcess(process);
-        } else {
+        } else if(nextBurst instanceof IOBurst){
         	// Handle IO Burst
-        	
-//        	System.out.println("["+process.getPid()+"] ("+process.getCurrentBurst().getRemainingTime()+") --> " + process.getPid());
-            // The next burst is IO, so change its state to WAITING
             process.setProcessState(ProcessState.WAITING);
             ioDevice.addProcessToDevice(this.currentActiveProcess);
         }
-        
-        this.currentActiveProcess = null;
+    }
+    
+    private void handleMemoryChange(int memoryValue) {
+    	int newSize = this.currentActiveProcess.getSize() + memoryValue;
+    	int currentSize = this.currentActiveProcess.getSize();
+    	
+    	if(newSize < 0) {
+    		// Kill process
+    		this.currentActiveProcess.setProcessState(ProcessState.KILLED);
+    		
+    		RAM.subtractFromUsage(currentSize);
+    		
+    		OperatingSystem.addFinishedProcess(this.currentActiveProcess);
+    		return;
+    	}
+    	
+    	Burst nextBurst = this.currentActiveProcess.nextBurst();
+    	
+    	if(nextBurst == null) {
+    		// Kill process
+    		this.currentActiveProcess.setProcessState(ProcessState.TERMINATED);
+    		
+    		RAM.subtractFromUsage(currentSize);
+    		
+    		OperatingSystem.addFinishedProcess(this.currentActiveProcess);
+    		return;
+    	}
+    	
+    	
+    	if(!RAM.addToUsage(memoryValue)) {
+    		if(!RAM.addToUsageA(memoryValue)) {
+    			// Set its status to waiting
+    			this.currentActiveProcess.setProcessState(ProcessState.WAITING);
+    			
+    			RAM.subtractFromUsage(currentSize);
+    			RAM.addToWaitingQ(this.currentActiveProcess);
+    		}
+    	}
+    	
+    	this.currentActiveProcess.setSize(newSize);
     }
 }
