@@ -2,15 +2,19 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
-public class RAM extends SuperRAM {
+public class RAM extends Thread {
 	private static Queue<PCB> readyQ = new PriorityBlockingQueue<>();
-	private static Queue<PCB> jobQ = new ConcurrentLinkedQueue<PCB>();
+	private static Queue<PCB> waitingForAllocation = new ConcurrentLinkedQueue<>();
+	
+	public final static int RAM_SIZE = (int) (160*0.9);
+	private static int usage;
+	public final static int ADDITIONAL_PROCESS = (int) (160*0.1);
+	private static int usageA;
+	
 	private static IODevice device;
-//	private DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-//	private Date date = new Date();
 
 	RAM(IODevice device) {
-		this.device = device;
+		RAM.device = device;
 	}
 
 	@Override
@@ -22,7 +26,6 @@ public class RAM extends SuperRAM {
 			try {
 				longTermScheduler();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         }
@@ -30,77 +33,61 @@ public class RAM extends SuperRAM {
     }
 
 	public boolean isFull(){
-		return super.getUsage() == SuperRAM.getRamSize();
+		return RAM.usage == RAM.RAM_SIZE;
 	}
 	
 	public boolean addToJobQ(PCB obj){
-		return jobQ.add(obj);
+		return waitingForAllocation.add(obj);
+	}
+	public static boolean addToReadyQ(PCB obj){
+		return readyQ.add(obj);//Do we have consider the size of RAM or not? 
 	}
 	
 	// to add new process   
 	void longTermScheduler() throws InterruptedException {
+		// Stop the device
+		device.wait();
 		
-		//This while loop add new process from jobQ to readyQ
-		while((!jobQ.isEmpty()) && super.getUsage() + jobQ.peek().getSize() <= SuperRAM.getRamSize()){
-			
-			//This statement add loaded time to process if this is new process to 90% of size 
-			//which is not additional process
-			if(!readyQ.contains(jobQ.peek().getPid())){
-				//TODO fix this line
-				jobQ.peek().setLoadedTime(Clock.getCurrentMs());
-			}
-			
-//			usage = usage + jobQ.peek().getSize();
-			super.setUsage(getUsage() + jobQ.peek().getSize());
-			readyQ.add(jobQ.remove());
+		// Check for deadlock
+		if(!waitingForAllocation.isEmpty() && readyQ.isEmpty() && isEnough(waitingForAllocation.peek().getSize())) {
+			PCB maxProcess = getMaxProcess();
+			killProcessInWaitingQ(maxProcess);
+		}
 		
-		}
-		// This statement add additional process to 10% of size
-		if((!jobQ.isEmpty()) && super.getUsageA() + jobQ.peek().getSize() <= SuperRAM.getAdditionalProcess() && readyQ.contains(jobQ.peek().getPid())){
-			readyQ.add(jobQ.remove());
+		// Start the device
+		device.notify();
+		
+		// Add waiting processes
+		while(!waitingForAllocation.isEmpty() && isEnough(waitingForAllocation.peek().getSize())) {
+			PCB process = waitingForAllocation.poll();
 			
-//			usageA = usageA + jobQ.peek().getSize();
-			super.setUsageA(getUsageA()+ jobQ.peek().getSize());
+			readyQ.add(process);
+			
+			addToUsage(process.getSize());
 		}
-		//This statement doing as point 6 says 
-		jobQ.peek().setProcessState(ProcessState.WAITING);
+		
+		// Time to sleep...
 		sleep(200);
-		jobQ.peek().setProcessState(ProcessState.READY);
 	}
+	
 	
 	//to serve from ready queue .. and check to add process form waiting(not I/O waiting) queue .. 
 	// read document point 6
 	PCB deQueue(){
-		if(!readyQ.isEmpty()){
-			PCB process = readyQ.remove();
-			if(process.getSize()>=0){
-				
-				if(!(super.getUsageA()-process.getSize()<0))
-//					usageA = usageA-process.getSize();
-					super.setUsageA(getUsageA()-process.getSize());
-				else
-					super.setUsage(getUsage()-process.getSize());
-				
-			}
-			
-//			if(!(jobQ.isEmpty())&&(jobQ.peek().getSize()+usage<=RAM_SIZE)){
-//				readyQ.add(jobQ.remove());
-//				
-//			}
-			return process;
+		if(readyQ.isEmpty()){
+			return null;
 		}
-		return null;
+		
+		PCB process = readyQ.remove();
+		int processSize = process.getSize();
+		
+		if(usageA-processSize >= 0)
+			usageA -= processSize;
+		else
+			usage -= processSize;
+
+		return process;
 	}
-
-//	try {
-//		// To forbid errors from happening, pause the thread
-//		device.wait();
-//	} catch(InterruptedException e) {
-//		e.printStackTrace();
-//	}
-
-//	// Run the thread again
-//		device.notify();
 
 	private PCB getMaxProcess() {
 		LinkedList<PCB> waitingList = (LinkedList<PCB>) device.getWaitingList();
@@ -148,28 +135,61 @@ public class RAM extends SuperRAM {
 
 	private void subtractFromUsage(int size) {
 		// Check if we have enough UsageA to subtract from
-		if(super.getUsageA() - size >= 0) {
-			int newSizeOfUsage = super.getUsageA() - size;
-			super.setUsageA(newSizeOfUsage);
+		if(usageA - size >= 0) {
+			int newSizeOfUsage = usageA - size;
+			usageA = newSizeOfUsage;
 		} else {
 			// If not, then subtract from normal Usage
-			int newSizeOfUsage = super.getUsage() - size;
-			super.setUsage(newSizeOfUsage);
+			int newSizeOfUsage = usage - size;
+			usage = newSizeOfUsage;
 		}
 	}
-
+	
+	private boolean addToUsage(int size) {
+		if(usage + size > RAM_SIZE)
+			return false;
+		
+		usage += size;
+		
+		return true;
+	}
+	
+	private boolean addToUsageA(int size) {
+		if(usageA + size > ADDITIONAL_PROCESS)
+			return false;
+		
+		usageA += size;
+		
+		return true;
+	}
+	
 	void removeProcess(PCB process) {
-		LinkedList<PCB> readyList = (LinkedList<PCB>) readyQ;
-
-		for(int i = 0; i < readyList.size(); i++) {
-			if(readyList.get(i).getPid() == process.getPid()) {
-				readyList.remove(i);
-
-				subtractFromUsage(process.getSize());
-
-				break;
-			}
+		if(readyQ.remove(process)) {
+			subtractFromUsage(process.getSize());
+		} else {
+			System.out.println("DID NOT FIND PROCESS!");
 		}
+	}
+	
+	public boolean findByPid(Queue<PCB> Q,int pid){
+		Queue<Integer> s = new PriorityBlockingQueue<Integer>();
+		Queue<PCB> alterQueue = new PriorityBlockingQueue<PCB>();
+		while (!Q.isEmpty()){
+			PCB p = Q.remove();
+			s.add(p.getPid());
+			alterQueue.add(p);
+		}
+		if(s.contains(pid)){
+			while(!alterQueue.isEmpty())
+				Q.add(alterQueue.remove());
+			return true;}
+		while(!alterQueue.isEmpty())
+			Q.add(alterQueue.remove());
+		return false;
+	}
+	
+	private boolean isEnough(int size) {
+		return size + usage <= RAM_SIZE;
 	}
 	//This method retrieve but not remove from Queue
 	static PCB retrieve(){
@@ -185,11 +205,26 @@ public class RAM extends SuperRAM {
 	}
 
 	public static Queue<PCB> getWaitingQ() {
-		return jobQ;
+		return waitingForAllocation;
 	}
 
 	public static void setWaitingQ(PriorityQueue<PCB> waitingQ) {
-		RAM.jobQ = waitingQ;
+		RAM.waitingForAllocation = waitingQ;
 	}
 	
+	static int getUsage() {
+		return RAM.usage;
+	}
+	
+	static void setUsage(int usage) {
+		RAM.usage = usage;
+	}
+	
+	static int getUsageA() {
+		return RAM.usageA;
+	}
+	
+	static void setUsageA(int usageA) {
+		RAM.usageA = usageA;
+	}
 }
