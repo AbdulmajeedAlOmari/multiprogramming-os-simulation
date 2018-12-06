@@ -69,6 +69,9 @@ public class FileHandler {
 		int busyTime = CPU.getBusyTime();
 		int idleTime = CPU.getIdleTime();
 
+		int terminatedProcesses = countTerminatedProcesses(finishedProcesses);
+		int killedProcesses = finishedProcesses.size() - terminatedProcesses;
+
 		try {
 			// path to create your file
 			File file = new File(Utility.OUTPUT_FILE_PATH);
@@ -85,6 +88,9 @@ public class FileHandler {
 			pw.println("CPU busy time: " + busyTime + " ms");
 			pw.println("CPU idle time: " + idleTime + " ms");
 			pw.println("CPU total time: " + (busyTime + idleTime) + " ms");
+			pw.println();
+			pw.println("Terminated processes: " + terminatedProcesses);
+			pw.println("Killed processes: " + killedProcesses);
 			pw.println();
 			pw.println( "#\t� process ID \t Loaded Time \t #Times in CPU \t Total in CPU \t #Times in IO \t Total in IO \t "
 					+ "#Times for memory allocation \t Finished Time \t Final State");
@@ -111,5 +117,16 @@ public class FileHandler {
 		percentage = Math.round(percentage * 100);
 
 		return percentage;
+	}
+
+	private static int countTerminatedProcesses(LinkedList<PCB> processes) {
+		int counter = 0;
+
+		for(PCB p : processes) {
+			if(p.getProcessState().equals(ProcessState.TERMINATED))
+				counter++;
+		}
+
+		return counter;
 	}
 }

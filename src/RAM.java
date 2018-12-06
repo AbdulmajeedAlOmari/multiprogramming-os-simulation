@@ -76,6 +76,8 @@ public class RAM extends Thread {
 			} else {
 				// If not the first time, then increment its memoryCounter
 				process.incrementMemoryCounter();
+				if(Utility.DEBUG_MODE)
+					System.out.println("Memory Counter: [ " + process.getPid() + " ] ---> " + process.getMemoryCounter());
 			}
 
 			if(process.getCurrentBurst() instanceof CPUBurst) {

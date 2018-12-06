@@ -44,6 +44,8 @@ public class OperatingSystem extends Thread {
     		if(finishedProcesses.size() == OperatingSystem.size) {
     		    if(Utility.DEBUG_MODE) {
                     System.out.println("\t\tFINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    System.out.println("Finished num: " + finishedProcesses.size());
+                    System.out.println("RAM Total Usage : " + RAM.getTotalRamUsage());
                 }
                 stopAllThreads();
     			FileHandler.writeFile(finishedProcesses);
