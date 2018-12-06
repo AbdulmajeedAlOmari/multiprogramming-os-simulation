@@ -13,6 +13,7 @@ public class OperatingSystem extends Thread {
     	RAM ram = new RAM(io);
     	CPU cpu = new CPU(io);
     	
+    	
 //        Clock clock =new Clock();
 
         // Add processes to Job Queue
@@ -20,13 +21,20 @@ public class OperatingSystem extends Thread {
     	   size++;
     	   ram.addToJobQ(p);
        }
+       // Run GUI thread
+       GUI gui = new GUI();
+	   Thread t = new Thread(gui);
+       t.start();
+        
+       cpu.start();
+       ram.start();
+       io.start();
+		
+       
 
-        io.start();
-        ram.start();
-        cpu.start();
 
-//       System.out.println(ram.);
        new OperatingSystem().start();
+       
 	}
 
     @Override
@@ -34,6 +42,7 @@ public class OperatingSystem extends Thread {
     	while(true) {
     		if(finishedProcesses.size() == OperatingSystem.size) {
     			System.out.println("FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    			FileHandler.writeFile(finishedProcesses);
     			// TODO remove exit
     			System.exit(0);
     		}

@@ -40,21 +40,6 @@ public class PCB implements Comparable {
 		//Put the rest of the queue in burstQueue for future use
 		this.burstQueue = burstQueue;
 	}
-
-	/***
-	 * This method prints PCB info as a String
-	 * a. Process ID
-	 * b. Program name
-	 * c. When it was loaded into the ready queue.
-	 * d. Number of times it was in the CPU.
-	 * e. Total time spent in the CPU
-	 * f. Number of times it performed an IO.
-	 * g. Total time spent in performing IO
-	 * h. Number of times it was waiting for memory.
-	 * i. Time it terminated or was killed
-	 * j. Its final state: Killed or Terminated
-	 * /////k. CPU Utilization/////
-	 */
 	public String toString() {
 		return "/——————————¦¦[ " + pid + " ]¦¦——————————\\"
 				+"» CPU time: " + cpuTotalTime
@@ -139,4 +124,44 @@ public class PCB implements Comparable {
 
 	Burst getCurrentBurst() { return this.currentBurst; }
 	int getPid() {return pid;}
+	public int getCpuCounter() {
+		return cpuCounter;
+	}
+	public void setCpuCounter(int cpuCounter) {
+		this.cpuCounter = cpuCounter;
+	}
+	public int getIoCounter() {
+		return ioCounter;
+	}
+	public void setIoCounter(int ioCounter) {
+		this.ioCounter = ioCounter;
+	}
+	public int getIoTotalTime() {
+		return ioTotalTime;
+	}
+	public void setIoTotalTime(int ioTotalTime) {
+		this.ioTotalTime = ioTotalTime;
+	}
+	public int getCpuTotalTime() {
+		return cpuTotalTime;
+	}
+	public void setCpuTotalTime(int cpuTotalTime) {
+		this.cpuTotalTime = cpuTotalTime;
+	}
+	public int getWaitingCounter() {
+		return waitingCounter;
+	}
+	public void setWaitingCounter(int waitingCounter) {
+		this.waitingCounter = waitingCounter;
+	}
+	public int getLoadedTime() {
+		return loadedTime;
+	}
+	public int getFinishedTime() {
+		return finishedTime;
+	}
+	public void setPid(int pid) {
+		this.pid = pid;
+	}
+	
 }
