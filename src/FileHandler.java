@@ -74,17 +74,17 @@ public class FileHandler {
 			
 			PrintWriter pw = new PrintWriter(file);
 			
-			pw.println("\t\t\t //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[multiprogramming-os-simulation]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\\\\");
+			pw.println("\t\t\t\t //——————————[multiprogramming-os-simulation]——————————\\\\");
 			pw.println();
-			pw.println( "#\tï¿½ process ID \t Loaded Time \t #Times in CPU \t Total in CPU \t #Times in IO \t Total in IO \t "
+			pw.println( "#\t» process ID \t Loaded Time \t #Times in CPU \t Total in CPU \t #Times in IO \t Total in IO \t "
 					+ "#Times for memory allocation \t Finished Time \t Final State");
 			int i =0;
 			for (PCB p : finishedProcesses){
-			pw.println( ++i +"\t    " + p.getPid() + "\t\t   " + p.getLoadedTime() + "   \t\t " + p.getCpuCounter() + " \t\t " + p.getCpuTotalTime() + " \t\t " + p.getIoCounter() + " \t\t" + p.getIoTotalTime() +
-					" \t\t\t  " + p.getMemoryCounter() + "\t\t\t" + "" + p.getFinishedTime() + "\t " + p.getProcessState() );
+			pw.println( ++i +"\t\t" + p.getPid() + "\t\t" + p.getLoadedTime() + "\t\t" + p.getCpuCounter() + "\t\t" + p.getCpuTotalTime() + "\t\t" + p.getIoCounter() + "\t\t" + p.getIoTotalTime() +
+					" \t\t\t" + p.getMemoryCounter() + "\t\t\t" + "" + p.getFinishedTime() + "\t " + p.getProcessState() );
 			pw.println();
 			}
-				pw.println("\t\t\t //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½-_END_-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\\\\");
+				pw.println("\t\t\t\t //————————————————————-_END_-————————————————————\\\\");
 			pw.close();
 
             if(Utility.DEBUG_MODE)
