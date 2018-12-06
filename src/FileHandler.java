@@ -7,13 +7,13 @@ import Bursts.IOBurst;
 
 public class FileHandler {
 
-	public static void readFile() {
+	public static LinkedList<PCB> readFile() {
 		String processID, bursTime, processSize, IOTime;
 		String line;
 		LinkedList<PCB> processes = new LinkedList<>();
 
 		try {
-			BufferedReader bfr = new BufferedReader(new FileReader("C:\\Users\\A.N\\Desktop\\cpumemoryio.txt"));
+			BufferedReader bfr = new BufferedReader(new FileReader("C:\\Users\\Abdulmajeed\\Desktop\\cpumemoryio.txt"));
 			bfr.readLine();
 			while ((line = bfr.readLine()) != null) {
 
@@ -53,63 +53,52 @@ public class FileHandler {
 
 				CPUBurst currentBurst = (CPUBurst) bursts.peek();
 
-				PCB process = new PCB(pid, String.valueOf(pid), 0, currentBurst.getMemoryValue(), ProcessState.NEW,
-						bursts);
+				PCB process = new PCB(pid, currentBurst.getMemoryValue(), bursts);
 
 				processes.add(process);
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		for(PCB p : processes) {
-			System.out.println("--- " + p.getPid() + " ---");
-			CPUBurst first = (CPUBurst) p.getCurrentBurst();
-			System.out.print(first.getRemainingTime() + "\t");
-			System.out.print(first.getMemoryValue() + "\t");
-			
-			Queue<Burst> bursts = p.burstQueue;
-			
-			while(bursts.peek() != null) {
-				Burst current = bursts.poll();
-				if(current instanceof CPUBurst) {
-					CPUBurst cpu = (CPUBurst) current;
-					System.out.print(cpu.getRemainingTime() + "\t");
-					System.out.print(cpu.getMemoryValue() + "\t");
-				} else {
-					System.out.print(current.getRemainingTime() + "\t");
-				}
-			}
-			System.out.println();
-		}
+//		PCB underTest = processes.get(10);
+//		System.out.println("[ " + underTest.getPid() + " ]");
+//
+//		if(underTest.getCurrentBurst() instanceof CPUBurst)
+//			System.out.println("CPU ---"+ underTest.getCurrentBurst().getRemainingTime());
+//		else
+//			System.out.println("IO ---"+ underTest.getCurrentBurst().getRemainingTime());
+//
+//		for(Object obj : underTest.burstQueue.toArray()) {
+//			String type;
+//
+//			Burst burst = (Burst) obj;
+//
+//			if(burst instanceof CPUBurst)
+//				type = "CPU";
+//			else
+//				type = "IO";
+//			System.out.println(type + " --- " + burst.getRemainingTime());
+//		}
 
-		// while)
-		// System.out.println(num);
-
-		// Here is the actual code
-		// ----------------------------------------
-		// for (int i = 1; i < num; i++) {
-		// bursTime = processesInfo[i].split("\t")[0].trim();
-		// processSize = processesInfo[(i + 1)].split("\t")[0].trim();
-		// IOTime = processesInfo[(i + 2)].split("\t")[0].trim();
-		// String info1[] = { bursTime, processSize, IOTime };
-		// temp2.add(info1);
-		// }
-
-		// processID = processesInfo[0].split("\t")[0].trim();
-		// System.out.println(processID);
-		// PCB process = new PCB(processID, bursTime, processSize, IOTime, State.New);
-		// Here we add the processes to the processes Q and to the Job Q
-		// for (String[] pro : temp2) {
-		// for (String infotmation : pro)
-		// System.out.print(infotmation + "\t");
-		// System.out.println();
-		// }
+		return processes;
 
 	}
-
+	
+	public void writeFile(LinkedList<PCB> finishedProcesses){
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter("OS_Output.txt"));
+			writer.write("Hi");
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+//	public static LinkedList<PCB> readFile() {
+//		
+//	}
 	/*
 	 * private static void outtpt() {
 	 * 
@@ -142,7 +131,7 @@ public class FileHandler {
 	 * FileWriter("Processes.txt")); bfw.close(); } catch (Exception e) {
 	 * System.out.println(e.getMessage()); } }
 	 */
-	public static void main(String[] args) {
-		readFile();
-	}
+//	public static void main(String[] args) {
+//		readFile();
+//	}
 }
