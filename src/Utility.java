@@ -10,7 +10,7 @@ public class Utility {
     public static final String INPUT_FILE_PATH = "C:\\Users\\Abdulmajeed\\Desktop\\cpumemoryio.txt";
 
     // The output file full path
-    public static final String OUTPUT_FILE_PATH = "C:\\Users\\WELCOM\\Desktop\\OS_Simulation.txt";
+    public static final String OUTPUT_FILE_PATH = "C:\\Users\\Abdulmajeed\\Desktop\\OS_Simulation.txt";
 
     // Dubug mode?
     public static final boolean DEBUG_MODE = false;

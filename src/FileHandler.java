@@ -74,7 +74,7 @@ public class FileHandler {
 			
 			PrintWriter pw = new PrintWriter(file);
 			
-			pw.println("\t\t\t //������������[multiprogramming-os-simulation]������������\\");
+			pw.println("\t\t\t //������������[multiprogramming-os-simulation]������������\\\\");
 			pw.println();
 			pw.println( "#\t� process ID \t Loaded Time \t #Times in CPU \t Total in CPU \t #Times in IO \t Total in IO \t "
 					+ "#Times for memory allocation \t Finished Time \t Final State");
@@ -84,7 +84,7 @@ public class FileHandler {
 					" \t\t\t  " + p.getWaitingCounter() + "\t\t\t" + "" + p.getFinishedTime() + "\t " + p.getProcessState() );
 			pw.println();
 			}
-				pw.println("\t\t\t //���������������������-_END_-���������������������\\");
+				pw.println("\t\t\t //���������������������-_END_-���������������������\\\\");
 			pw.close();
 
             if(Utility.DEBUG_MODE)

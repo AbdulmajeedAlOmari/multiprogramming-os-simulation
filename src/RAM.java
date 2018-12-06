@@ -38,7 +38,7 @@ public class RAM extends Thread {
 		return waitingForAllocation.add(obj);
 	}
 	public static boolean addToReadyQ(PCB obj){
-		return readyQ.add(obj);//Do we have consider the size of RAM or not? 
+		return readyQ.add(obj);
 	}
 	
 	// to add new process   
@@ -48,7 +48,9 @@ public class RAM extends Thread {
 				&& readyQ.isEmpty()
 				&& !isEnough(waitingForAllocation.peek().getSize())
 				&& !device.isEmpty()) {
-			System.out.println("Deadlock solved for: [ " + waitingForAllocation.peek().getPid() + " ]");
+
+			if(Utility.DEBUG_MODE)
+				System.out.println("Deadlock solved for: [ " + waitingForAllocation.peek().getPid() + " ]");
 			
 			synchronized (device) {
 				// Stop the device

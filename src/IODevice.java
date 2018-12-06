@@ -86,7 +86,8 @@ public class IODevice extends Thread {
             // Add process to finished list in OS
             OperatingSystem.addFinishedProcess(process);
 
-            System.out.println("(IO) - KILLED PROCESS [" +process.getPid()+ "].");
+            if(Utility.DEBUG_MODE)
+                System.out.println("(IO) - KILLED PROCESS [" +process.getPid()+ "].");
         }
     }
 
