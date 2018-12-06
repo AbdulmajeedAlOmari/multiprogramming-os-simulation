@@ -13,7 +13,7 @@ public class FileHandler {
 		LinkedList<PCB> processes = new LinkedList<>();
 
 		try {
-			BufferedReader bfr = new BufferedReader(new FileReader("C:\\Users\\Abdulmajeed\\Desktop\\cpumemoryio.txt"));
+			BufferedReader bfr = new BufferedReader(new FileReader(Utility.INPUT_FILE_PATH));
 			bfr.readLine();
 			while ((line = bfr.readLine()) != null) {
 
@@ -60,78 +60,39 @@ public class FileHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-//		PCB underTest = processes.get(10);
-//		System.out.println("[ " + underTest.getPid() + " ]");
-//
-//		if(underTest.getCurrentBurst() instanceof CPUBurst)
-//			System.out.println("CPU ---"+ underTest.getCurrentBurst().getRemainingTime());
-//		else
-//			System.out.println("IO ---"+ underTest.getCurrentBurst().getRemainingTime());
-//
-//		for(Object obj : underTest.burstQueue.toArray()) {
-//			String type;
-//
-//			Burst burst = (Burst) obj;
-//
-//			if(burst instanceof CPUBurst)
-//				type = "CPU";
-//			else
-//				type = "IO";
-//			System.out.println(type + " --- " + burst.getRemainingTime());
-//		}
-
 		return processes;
-
 	}
 	
-	public void writeFile(LinkedList<PCB> finishedProcesses){
+	public static void writeFile(LinkedList<PCB> finishedProcesses){
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter("OS_Output.txt"));
-			writer.write("Hi");
+			// path to create your file
+			File file = new File(Utility.OUTPUT_FILE_PATH);
+
+			if(!file.exists()) {
+					file.createNewFile();	
+			}
 			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			PrintWriter pw = new PrintWriter(file);
+			
+			pw.println("\t\t\t //������������[multiprogramming-os-simulation]������������\\\\");
+			pw.println();
+			pw.println( "#\t� process ID \t Loaded Time \t #Times in CPU \t Total in CPU \t #Times in IO \t Total in IO \t "
+					+ "#Times for memory allocation \t Finished Time \t Final State");
+			int i =0;
+			for (PCB p : finishedProcesses){
+			pw.println( ++i +"\t    " + p.getPid() + "\t\t   " + p.getLoadedTime() + "   \t\t " + p.getCpuCounter() + " \t\t " + p.getCpuTotalTime() + " \t\t " + p.getIoCounter() + " \t\t" + p.getIoTotalTime() +
+					" \t\t\t  " + p.getMemoryCounter() + "\t\t\t" + "" + p.getFinishedTime() + "\t " + p.getProcessState() );
+			pw.println();
+			}
+				pw.println("\t\t\t //���������������������-_END_-���������������������\\\\");
+			pw.close();
+
+            if(Utility.DEBUG_MODE)
+			    System.out.println("Done");
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
-	
-//	public static LinkedList<PCB> readFile() {
-//		
-//	}
-	/*
-	 * private static void outtpt() {
-	 * 
-	 * int terminated = 0; int killed = 0; int processesCPUBound = 0; //processes
-	 * list for (PCB element : (processes list)){
-	 * 
-	 * programmeSize += element.size;
-	 * 
-	 * if(element.state == State.Terminated) processesNormally++; else
-	 * if(element.state == State.Killed) killed++;
-	 * 
-	 * if(element.getIOTime() > element.getIOCounter()) processesCPUBound++; }
-	 * System.out.println(
-	 * "---------------------------------------------------------------------------------------------"
-	 * ); PCB temp; System.out.println("1-Process ID: " + temp.getPid());
-	 * System.out.println("2-The Program name: " );
-	 * System.out.println("3-When it was loded into the ready queue: " );
-	 * System.out.println("4-Total time spent in the CPU: " );
-	 * System.out.println("5-Number of times it preformed an IO: " );
-	 * System.out.println("6-Total time spent in performing IO: ");
-	 * System.out.println("7-Number of times it was wating for memory: ");
-	 * System.out.println("8-Time it was terminated or was killed: ");
-	 * System.out.println("9-Its final state: ");
-	 * System.out.println("CUP utilization: "); System.out.println(
-	 * "---------------------------------------------------------------------------------------------"
-	 * ); }
-	 * 
-	 * public static void writeOnTextFile() { try { ArrayList<Integer> size = new
-	 * ArrayList<>(); BufferedWriter bfw = new BufferedWriter(new
-	 * FileWriter("Processes.txt")); bfw.close(); } catch (Exception e) {
-	 * System.out.println(e.getMessage()); } }
-	 */
-//	public static void main(String[] args) {
-//		readFile();
-//	}
 }

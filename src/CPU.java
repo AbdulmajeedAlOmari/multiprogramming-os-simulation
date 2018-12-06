@@ -71,7 +71,9 @@ public class CPU extends Thread {
         if(nextBurst == null) {
             // This process finished all of its bursts normally
             process.terminateProcess();
-            System.out.println("(CPU) - FINISHED ==============================> " + process.getPid());
+
+            if(Utility.DEBUG_MODE)
+                System.out.println("(CPU) - FINISHED ==============================> " + process.getPid());
             return;
         }
 

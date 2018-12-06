@@ -2,7 +2,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import Bursts.Burst;
 import Bursts.CPUBurst;
 
 public class RAM extends Thread {
@@ -38,7 +37,7 @@ public class RAM extends Thread {
 		return waitingForAllocation.add(obj);
 	}
 	public static boolean addToReadyQ(PCB obj){
-		return readyQ.add(obj);//Do we have consider the size of RAM or not? 
+		return readyQ.add(obj);
 	}
 	
 	// to add new process   
@@ -48,12 +47,13 @@ public class RAM extends Thread {
 				&& readyQ.isEmpty()
 				&& !isEnough(waitingForAllocation.peek().getSize())
 				&& !device.isEmpty()) {
-			System.out.println("Deadlock solved for: [ " + waitingForAllocation.peek().getPid() + " ]");
-			
 			synchronized (device) {
 				// Stop the device
 				Thread.sleep(5);
 			}
+
+			if(Utility.DEBUG_MODE)
+				System.out.println("Deadlock solved for: [ " + waitingForAllocation.peek().getPid() + " ]");
 			
 			PCB maxProcess = device.getMaxProcess();
 			device.killProcessFromIOQueue(maxProcess);
@@ -67,10 +67,19 @@ public class RAM extends Thread {
 		// Add waiting processes
 		while(!waitingForAllocation.isEmpty() && isEnough(waitingForAllocation.peek().getSize())) {
 			PCB process = waitingForAllocation.poll();
-			
+
+			if(process.getLoadedTime() == -1) {
+				process.setLoadedTime(Clock.getCurrentMs());
+			} else {
+				// If not the first time, then increment its memoryCounter
+				process.incrementMemoryCounter();
+			}
+
 			if(process.getCurrentBurst() instanceof CPUBurst) {
+				process.setProcessState(ProcessState.READY);
 				readyQ.add(process);
 			} else {
+				// No need to change its state to WAITING since it is already!
 				device.addProcessToDevice(process);
 			}
 			

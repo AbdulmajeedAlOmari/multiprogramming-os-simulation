@@ -77,16 +77,18 @@ public class IODevice extends Thread {
 
     void killProcessFromIOQueue(PCB process) {
         if(waitingList.remove(process)) {
-            // Remove its size from ram
-            RAM.subtractFromUsage(process.getSize());
-
-            // Set state to KILLED
-            process.setProcessState(ProcessState.KILLED);
-
-            // Add process to finished list in OS
-            OperatingSystem.addFinishedProcess(process);
-
-            System.out.println("(IO) - KILLED PROCESS [" +process.getPid()+ "].");
+            process.killProcess();
+//            // Remove its size from ram
+//            RAM.subtractFromUsage(process.getSize());
+//
+//            // Set state to KILLED
+//            process.setProcessState(ProcessState.KILLED);
+//
+//            // Add process to finished list in OS
+//            OperatingSystem.addFinishedProcess(process);
+//
+//            if(Utility.DEBUG_MODE)
+//                System.out.println("(IO) - KILLED PROCESS [" +process.getPid()+ "].");
         }
     }
 

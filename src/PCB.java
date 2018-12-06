@@ -8,9 +8,10 @@ public class PCB implements Comparable {
 
 	private int cpuCounter; //Number of times this process became in RUNNING state
 	private int ioCounter; //Number of times this process became in WAITING state
+	private int memoryCounter; //Number of times this process requested memory allocation
 	private int ioTotalTime; //Total time of executed IO burst
 	private int cpuTotalTime; //Total time of executed CPU burst
-	private int waitingCounter; //Number of times this process was waiting for memory space
+//	private int waitingCounter; //Number of times this process was waiting for memory space
 	private int finishedTime; //The time when this process TERMINATED/KILLED
 
 	private ProcessState processState; //Process State
@@ -27,8 +28,9 @@ public class PCB implements Comparable {
 		this.cpuCounter = 0;
 		this.ioCounter = 0;
 		this.ioTotalTime = 0;
+		this.memoryCounter = 0;
 		this.cpuTotalTime = 0;
-		this.waitingCounter = 0;
+//		this.waitingCounter = 0;
 		this.finishedTime = 0;
 
 		this.size = size;
@@ -40,21 +42,6 @@ public class PCB implements Comparable {
 		//Put the rest of the queue in burstQueue for future use
 		this.burstQueue = burstQueue;
 	}
-
-	/***
-	 * This method prints PCB info as a String
-	 * a. Process ID
-	 * b. Program name
-	 * c. When it was loaded into the ready queue.
-	 * d. Number of times it was in the CPU.
-	 * e. Total time spent in the CPU
-	 * f. Number of times it performed an IO.
-	 * g. Total time spent in performing IO
-	 * h. Number of times it was waiting for memory.
-	 * i. Time it terminated or was killed
-	 * j. Its final state: Killed or Terminated
-	 * /////k. CPU Utilization/////
-	 */
 	public String toString() {
 		return "/——————————¦¦[ " + pid + " ]¦¦——————————\\"
 				+"» CPU time: " + cpuTotalTime
@@ -87,7 +74,8 @@ public class PCB implements Comparable {
 
 		OperatingSystem.addFinishedProcess(this);
 
-		System.out.println("(PCB) - KILLED PROCESS [" + pid + "].");
+		if(Utility.DEBUG_MODE)
+			System.out.println("(PCB) - KILLED PROCESS [" + pid + "].");
 	}
 
 	void terminateProcess() {
@@ -99,7 +87,8 @@ public class PCB implements Comparable {
 
 		OperatingSystem.addFinishedProcess(this);
 
-		System.out.println("(PCB) - TERMINATED PROCESS [" + pid + "].");
+		if(Utility.DEBUG_MODE)
+			System.out.println("(PCB) - TERMINATED PROCESS [" + pid + "].");
 	}
 
 	void letProcessWait() {
@@ -110,7 +99,8 @@ public class PCB implements Comparable {
 
 		RAM.addToJobQ(this);
 
-		System.out.println("(PCB) - toWAIT PROCESS [" + pid + "].");
+		if(Utility.DEBUG_MODE)
+			System.out.println("(PCB) - toWAIT PROCESS [" + pid + "].");
 	}
 
 	void letProcessReady() {
@@ -118,7 +108,8 @@ public class PCB implements Comparable {
 
 		RAM.addToReadyQ(this);
 
-		System.out.println("(PCB) - toREADY PROCESS [" + pid + "].");
+		if(Utility.DEBUG_MODE)
+			System.out.println("(PCB) - toREADY PROCESS [" + pid + "].");
 	}
 
 	// Getters/Setters
@@ -126,9 +117,9 @@ public class PCB implements Comparable {
 
 	void incrementCpuCounter() { this.cpuCounter++; }
 	void incrementIoCounter() { this.ioCounter++; }
+	void incrementMemoryCounter() { this.memoryCounter++; }
 	void incrementIoTotalTime() { this.ioTotalTime++; }
 	void incrementCpuTotalTime() { this.cpuTotalTime++; }
-	void incrementWaitingCounter() { this.waitingCounter++; }
 	void setFinishedTime(int finishedTime) { this.finishedTime = finishedTime; }
 
 	ProcessState getProcessState() { return processState; }
@@ -139,4 +130,21 @@ public class PCB implements Comparable {
 
 	Burst getCurrentBurst() { return this.currentBurst; }
 	int getPid() {return pid;}
+	int getCpuCounter() {
+		return cpuCounter;
+	}
+	int getIoCounter() {
+		return ioCounter;
+	}
+	int getMemoryCounter() { return memoryCounter; }
+	int getIoTotalTime() {
+		return ioTotalTime;
+	}
+	int getCpuTotalTime() {
+		return cpuTotalTime;
+	}
+	int getLoadedTime() { return loadedTime; }
+	int getFinishedTime() { return finishedTime; }
+
+	
 }
