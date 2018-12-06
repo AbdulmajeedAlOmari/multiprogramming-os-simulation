@@ -42,15 +42,16 @@ public class RAM extends Thread {
 	
 	// to add new process   
 	void longTermScheduler() throws InterruptedException {
+		synchronized (device) {
+			// Stop the device temporarly
+			Thread.sleep(5);
+		}
+
 		// Check for deadlock
 		if(!waitingForAllocation.isEmpty()
 				&& readyQ.isEmpty()
 				&& !isEnough(waitingForAllocation.peek().getSize())
 				&& !device.isEmpty()) {
-			synchronized (device) {
-				// Stop the device
-				Thread.sleep(5);
-			}
 
 			if(Utility.DEBUG_MODE)
 				System.out.println("Deadlock solved for: [ " + waitingForAllocation.peek().getPid() + " ]");
@@ -58,12 +59,14 @@ public class RAM extends Thread {
 			PCB maxProcess = device.getMaxProcess();
 			device.killProcessFromIOQueue(maxProcess);
 			
-			synchronized (device) {
-				// Start the device
-				device.notify();
-			}
+
 		}
-		
+
+		synchronized (device) {
+			// Start the device again
+			device.notify();
+		}
+
 		// Add waiting processes
 		while(!waitingForAllocation.isEmpty() && isEnough(waitingForAllocation.peek().getSize())) {
 			PCB process = waitingForAllocation.poll();
