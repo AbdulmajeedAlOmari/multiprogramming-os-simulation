@@ -112,11 +112,11 @@ public class FileHandler {
 			}
 	}
 
-	private static double getCpuUtilization(int busyTime, int idleTime) {
+	private static int getCpuUtilization(int busyTime, int idleTime) {
 		double percentage = (double) busyTime / (busyTime + idleTime);
 		percentage = Math.round(percentage * 100);
 
-		return percentage;
+		return (int) percentage;
 	}
 
 	private static int countTerminatedProcesses(LinkedList<PCB> processes) {
