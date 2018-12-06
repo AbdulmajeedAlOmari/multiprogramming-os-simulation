@@ -76,6 +76,8 @@ public class RAM extends Thread {
 			} else {
 				// If not the first time, then increment its memoryCounter
 				process.incrementMemoryCounter();
+				if(Utility.DEBUG_MODE)
+					System.out.println("Memory Counter: [ " + process.getPid() + " ] ---> " + process.getMemoryCounter());
 			}
 
 			if(process.getCurrentBurst() instanceof CPUBurst) {
@@ -148,11 +150,8 @@ public class RAM extends Thread {
 	public static void setReadyQ(PriorityQueue<PCB> readyQ) {
 		RAM.readyQ = readyQ;
 	}
-	public static Queue<PCB> getWaitingQ() {
+	static Queue<PCB> getWaitingQ() {
 		return waitingForAllocation;
-	}
-	public static void setWaitingQ(PriorityQueue<PCB> waitingQ) {
-		RAM.waitingForAllocation = waitingQ;
 	}
 	static int getTotalRamUsage() { return totalRamUsage; }
 }

@@ -64,6 +64,14 @@ public class FileHandler {
 	}
 	
 	public static void writeFile(LinkedList<PCB> finishedProcesses){
+
+		// CPU Status
+		int busyTime = CPU.getBusyTime();
+		int idleTime = CPU.getIdleTime();
+
+		int terminatedProcesses = countTerminatedProcesses(finishedProcesses);
+		int killedProcesses = finishedProcesses.size() - terminatedProcesses;
+
 		try {
 			// path to create your file
 			File file = new File(Utility.OUTPUT_FILE_PATH);
@@ -74,9 +82,17 @@ public class FileHandler {
 			
 			PrintWriter pw = new PrintWriter(file);
 			
-			pw.println("\t\t\t\t //——————————[multiprogramming-os-simulation]——————————\\\\");
+			pw.println("\t\t\t\t //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[multiprogramming-os-simulation]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\\\\");
 			pw.println();
-			pw.println( "#\t» process ID \t Loaded Time \t #Times in CPU \t Total in CPU \t #Times in IO \t Total in IO \t "
+			pw.println("CPU Utilization: " + getCpuUtilization(busyTime, idleTime) + "%");
+			pw.println("CPU busy time: " + busyTime + " ms");
+			pw.println("CPU idle time: " + idleTime + " ms");
+			pw.println("CPU total time: " + (busyTime + idleTime) + " ms");
+			pw.println();
+			pw.println("Terminated processes: " + terminatedProcesses);
+			pw.println("Killed processes: " + killedProcesses);
+			pw.println();
+			pw.println( "#\tï¿½ process ID \t Loaded Time \t #Times in CPU \t Total in CPU \t #Times in IO \t Total in IO \t "
 					+ "#Times for memory allocation \t Finished Time \t Final State");
 			int i =0;
 			for (PCB p : finishedProcesses){
@@ -84,7 +100,7 @@ public class FileHandler {
 					" \t\t\t" + p.getMemoryCounter() + "\t\t\t" + "" + p.getFinishedTime() + "\t " + p.getProcessState() );
 			pw.println();
 			}
-				pw.println("\t\t\t\t //————————————————————-_END_-————————————————————\\\\");
+				pw.println("\t\t\t\t //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½-_END_-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\\\\");
 			pw.close();
 
             if(Utility.DEBUG_MODE)
@@ -94,5 +110,23 @@ public class FileHandler {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+	}
+
+	private static double getCpuUtilization(int busyTime, int idleTime) {
+		double percentage = (double) busyTime / (busyTime + idleTime);
+		percentage = Math.round(percentage * 100);
+
+		return percentage;
+	}
+
+	private static int countTerminatedProcesses(LinkedList<PCB> processes) {
+		int counter = 0;
+
+		for(PCB p : processes) {
+			if(p.getProcessState().equals(ProcessState.TERMINATED))
+				counter++;
+		}
+
+		return counter;
 	}
 }

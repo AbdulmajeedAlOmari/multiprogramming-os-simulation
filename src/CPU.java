@@ -5,10 +5,14 @@ import Bursts.IOBurst;
 public class CPU extends Thread {
     private IODevice ioDevice;
     private PCB currentActiveProcess;
-    
+    private static int busyTime;
+    private static int idleTime;
+
     CPU(IODevice ioDevice) {
         this.ioDevice = ioDevice;
         this.currentActiveProcess = null;
+        CPU.busyTime = 0;
+        CPU.idleTime = 0;
     }
 
     @Override
@@ -29,6 +33,10 @@ public class CPU extends Thread {
 
                 //This will increment the Clock by 1 millisecond
                 Clock.incrementMs();
+
+                // Increment CPU idle time
+                if(!OperatingSystem.isFinished())
+                    CPU.idleTime++;
             }
         }
     }
@@ -53,6 +61,9 @@ public class CPU extends Thread {
 
             // Increment the total time it was processed in CPU
             process.incrementCpuTotalTime();
+
+            // Increment CPU busyTime
+            CPU.busyTime++;
 
             try {
                 //Wait for 1 millisecond before proceeding
@@ -92,4 +103,7 @@ public class CPU extends Thread {
             ioDevice.addProcessToDevice(this.currentActiveProcess);
         }
     }
+
+    static int getBusyTime() { return CPU.busyTime; }
+    static int getIdleTime() { return CPU.idleTime; }
 }
