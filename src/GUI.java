@@ -10,6 +10,7 @@ public class GUI extends JFrame implements Runnable {
 	JLabel l;
 
 	Container c = getContentPane();
+	Graphics graphics;
 
 	public GUI() {
 		l = new JLabel("RAM usge: " + (RAM.RAM_SIZE + RAM.ADDITIONAL_RAM_SIZE) + " %");
@@ -20,7 +21,7 @@ public class GUI extends JFrame implements Runnable {
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.arr = RAM.getReadyQ().toArray();
-		c.getGraphics();
+		this.graphics = c.getGraphics();
 
 	}
 
@@ -61,7 +62,7 @@ public class GUI extends JFrame implements Runnable {
 	@Override
 	public void run() {
 		while (true) {
-			paint(null);
+			paint(graphics);
 		}
 	}
 
