@@ -8,6 +8,7 @@ public class PCB implements Comparable {
 
 	private int cpuCounter; //Number of times this process became in RUNNING state
 	private int ioCounter; //Number of times this process became in WAITING state
+	private int memoryCounter; //Number of times this process requested memory allocation
 	private int ioTotalTime; //Total time of executed IO burst
 	private int cpuTotalTime; //Total time of executed CPU burst
 	private int waitingCounter; //Number of times this process was waiting for memory space
@@ -115,6 +116,7 @@ public class PCB implements Comparable {
 
 	void incrementCpuCounter() { this.cpuCounter++; }
 	void incrementIoCounter() { this.ioCounter++; }
+	void incrementMemoryCounter() { this.memoryCounter++; }
 	void incrementIoTotalTime() { this.ioTotalTime++; }
 	void incrementCpuTotalTime() { this.cpuTotalTime++; }
 	void incrementWaitingCounter() { this.waitingCounter++; }
@@ -128,44 +130,28 @@ public class PCB implements Comparable {
 
 	Burst getCurrentBurst() { return this.currentBurst; }
 	int getPid() {return pid;}
-	public int getCpuCounter() {
+	int getCpuCounter() {
 		return cpuCounter;
 	}
-	public void setCpuCounter(int cpuCounter) {
-		this.cpuCounter = cpuCounter;
-	}
-	public int getIoCounter() {
+	int getIoCounter() {
 		return ioCounter;
 	}
-	public void setIoCounter(int ioCounter) {
-		this.ioCounter = ioCounter;
-	}
-	public int getIoTotalTime() {
+	int getMemoryCounter() { return memoryCounter; }
+	int getIoTotalTime() {
 		return ioTotalTime;
 	}
-	public void setIoTotalTime(int ioTotalTime) {
-		this.ioTotalTime = ioTotalTime;
-	}
-	public int getCpuTotalTime() {
+	int getCpuTotalTime() {
 		return cpuTotalTime;
 	}
-	public void setCpuTotalTime(int cpuTotalTime) {
-		this.cpuTotalTime = cpuTotalTime;
-	}
-	public int getWaitingCounter() {
+	int getWaitingCounter() {
 		return waitingCounter;
 	}
-	public void setWaitingCounter(int waitingCounter) {
-		this.waitingCounter = waitingCounter;
-	}
-	public int getLoadedTime() {
+	int getLoadedTime() {
 		return loadedTime;
 	}
-	public int getFinishedTime() {
+	int getFinishedTime() {
 		return finishedTime;
 	}
-	public void setPid(int pid) {
-		this.pid = pid;
-	}
+
 	
 }
