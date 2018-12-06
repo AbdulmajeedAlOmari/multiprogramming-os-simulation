@@ -16,40 +16,43 @@ public class OperatingSystem extends Thread {
     	
 //        Clock clock =new Clock();
 
-        // Add processes to Job Queue
+        // Add processes to Waiting For Allocation Queue
        for(PCB p : FileHandler.readFile()){
     	   size++;
-    	   ram.addToJobQ(p);
+    	   RAM.addToJobQ(p);
        }
-       // Run GUI thread
-       GUI gui = new GUI();
-	   Thread t = new Thread(gui);
-       t.start();
-        
+
        cpu.start();
        ram.start();
        io.start();
-		
-       
 
+        // Run GUI thread
+        GUI gui = new GUI();
+        Thread t = new Thread(gui);
+        t.start();
 
        new OperatingSystem().start();
-       
 	}
 
     @Override
     public void run() {
     	while(true) {
     		if(finishedProcesses.size() == OperatingSystem.size) {
-    			System.out.println("FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    		    if(Utility.DEBUG_MODE) {
+                    System.out.println("\t\tFINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                }
+
     			FileHandler.writeFile(finishedProcesses);
     			// TODO remove exit
-    			System.exit(0);
+//    			System.exit(0);
     		}
 
-            System.out.println("Finished num: " + finishedProcesses.size());
-            System.out.println("RAM Total Usage : " + RAM.getTotalRamUsage());
-            System.out.println("---------------------------");
+    		if(Utility.DEBUG_MODE) {
+                System.out.println("Finished num: " + finishedProcesses.size());
+                System.out.println("RAM Total Usage : " + RAM.getTotalRamUsage());
+                System.out.println("---------------------------");
+            }
+
     		try {
     			sleep(2000);
     		} catch (InterruptedException e) {

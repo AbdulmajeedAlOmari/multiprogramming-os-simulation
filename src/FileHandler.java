@@ -13,7 +13,7 @@ public class FileHandler {
 		LinkedList<PCB> processes = new LinkedList<>();
 
 		try {
-			BufferedReader bfr = new BufferedReader(new FileReader("C:\\Users\\WELCOM\\Desktop\\CSC227\\project\\cpumemoryio.txt"));
+			BufferedReader bfr = new BufferedReader(new FileReader(Utility.INPUT_FILE_PATH));
 			bfr.readLine();
 			while ((line = bfr.readLine()) != null) {
 
@@ -65,8 +65,8 @@ public class FileHandler {
 	
 	public static void writeFile(LinkedList<PCB> finishedProcesses){
 		try {
-			// directory to create your file
-			File file = new File("C:\\Users\\WELCOM\\Desktop\\fileName1.txt");
+			// path to create your file
+			File file = new File(Utility.OUTPUT_FILE_PATH);
 	        
 			if(!file.exists()) {
 					file.createNewFile();	
@@ -74,9 +74,9 @@ public class FileHandler {
 			
 			PrintWriter pw = new PrintWriter(file);
 			
-			pw.println("\t\t\t //——————————¦¦[multiprogramming-os-simulation]¦¦——————————\\");
+			pw.println("\t\t\t //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[multiprogramming-os-simulation]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\\");
 			pw.println();
-			pw.println( "#\t» process ID \t Loaded Time \t #Times in CPU \t Total in CPU \t #Times in IO \t Total in IO \t "
+			pw.println( "#\tï¿½ process ID \t Loaded Time \t #Times in CPU \t Total in CPU \t #Times in IO \t Total in IO \t "
 					+ "#Times for memory allocation \t Finished Time \t Final State");
 			int i =0;
 			for (PCB p : finishedProcesses){
@@ -84,9 +84,12 @@ public class FileHandler {
 					" \t\t\t  " + p.getWaitingCounter() + "\t\t\t" + "" + p.getFinishedTime() + "\t " + p.getProcessState() );
 			pw.println();
 			}
-				pw.println("\t\t\t //————————————————————¦-_END_-¦————————————————————\\");
+				pw.println("\t\t\t //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½-_END_-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\\");
 			pw.close();
-			System.out.println("Done");
+
+            if(Utility.DEBUG_MODE)
+			    System.out.println("Done");
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

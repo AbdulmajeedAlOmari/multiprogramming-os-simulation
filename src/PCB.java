@@ -72,7 +72,8 @@ public class PCB implements Comparable {
 
 		OperatingSystem.addFinishedProcess(this);
 
-		System.out.println("(PCB) - KILLED PROCESS [" + pid + "].");
+		if(Utility.DEBUG_MODE)
+			System.out.println("(PCB) - KILLED PROCESS [" + pid + "].");
 	}
 
 	void terminateProcess() {
@@ -84,7 +85,8 @@ public class PCB implements Comparable {
 
 		OperatingSystem.addFinishedProcess(this);
 
-		System.out.println("(PCB) - TERMINATED PROCESS [" + pid + "].");
+		if(Utility.DEBUG_MODE)
+			System.out.println("(PCB) - TERMINATED PROCESS [" + pid + "].");
 	}
 
 	void letProcessWait() {
@@ -95,7 +97,8 @@ public class PCB implements Comparable {
 
 		RAM.addToJobQ(this);
 
-		System.out.println("(PCB) - toWAIT PROCESS [" + pid + "].");
+		if(Utility.DEBUG_MODE)
+			System.out.println("(PCB) - toWAIT PROCESS [" + pid + "].");
 	}
 
 	void letProcessReady() {
@@ -103,7 +106,8 @@ public class PCB implements Comparable {
 
 		RAM.addToReadyQ(this);
 
-		System.out.println("(PCB) - toREADY PROCESS [" + pid + "].");
+		if(Utility.DEBUG_MODE)
+			System.out.println("(PCB) - toREADY PROCESS [" + pid + "].");
 	}
 
 	// Getters/Setters
