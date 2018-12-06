@@ -16,7 +16,6 @@ public class IODevice extends Thread {
     public IODevice() {
         currentProcess = null;
         waitingList = new ConcurrentLinkedQueue<>();
-//        super.start();
     }
 
     @Override
@@ -24,7 +23,7 @@ public class IODevice extends Thread {
         //While OS is running, keep handling IO requests if available
         while(true) {
         	currentProcess = waitingList.poll();
-//        	System.out.println("IO Device Queue size: " + waitingList.size());
+
             if(currentProcess != null) {
                 handleIORequest();
             } else {
@@ -39,17 +38,10 @@ public class IODevice extends Thread {
 
     }
 
-    /***
-     * This method handles <strong>current process</strong> in the IO Device.<br/>
-     * - Requirements:
-     * <ul>
-     *     <li>There is a current process in the IO Device.</li>
-     * </ul>
-     */
     private void handleIORequest() {
         // Increment the process IO counter
         currentProcess.incrementIoCounter();
-        
+
 //        System.out.print("["+currentProcess.getPid()+"] (" + currentProcess.getCurrentBurst().getRemainingTime()+ ") -->\t");
         
         while(currentProcess.getCurrentBurst().getRemainingTime() > 0) {
@@ -58,7 +50,7 @@ public class IODevice extends Thread {
 
             // Decrement the process IO burst
             currentProcess.getCurrentBurst().decrementRemainingTime();
-            
+
 //            System.out.print(currentProcess.getCurrentBurst().getRemainingTime()+"\t");
             try {
                 //Wait for 1 millisecond
@@ -68,34 +60,55 @@ public class IODevice extends Thread {
             }
         }
 //        System.out.println();
-        currentProcess.setProcessState(ProcessState.READY);
-        
-        // Get next burst
-        Burst nextBurst = currentProcess.nextBurst();
-        
-        if(nextBurst == null) {
-        	 // Save the termination time of the process
-        	currentProcess.setFinishedTime(Clock.getCurrentMs());
 
-            System.out.println("Finsiehd --> " + currentProcess.getPid());
-            // This process finished all of its bursts normally
-            currentProcess.setProcessState(ProcessState.TERMINATED);
-            
-            RAM.subtractFromUsage(currentProcess.getSize());
-            
-            OperatingSystem.addFinishedProcess(currentProcess);
-        } else {
-        	if(currentProcess == null)
-            	System.out.println("NULL EXCEPTION");
-        	RAM.addToReadyQ(currentProcess);
+        Burst nextBurst = currentProcess.nextBurst();
+
+        if(nextBurst == null) {
+            currentProcess.terminateProcess();
+            return;
         }
+
+        currentProcess.letProcessReady();
     }
 
     public void addProcessToDevice(PCB process) {
     	waitingList.add(process);
     }
 
-    public void setCurrentProcess(PCB currentProcess) { IODevice.currentProcess = currentProcess; }
-    public PCB getCurrentProcess() { return currentProcess; }
+    void killProcessFromIOQueue(PCB process) {
+        if(waitingList.remove(process)) {
+            // Remove its size from ram
+            RAM.subtractFromUsage(process.getSize());
+
+            // Set state to KILLED
+            process.setProcessState(ProcessState.KILLED);
+
+            // Add process to finished list in OS
+            OperatingSystem.addFinishedProcess(process);
+
+            System.out.println("(IO) - KILLED PROCESS [" +process.getPid()+ "].");
+        }
+    }
+
+    PCB getMaxProcess() {
+        Object[] list = waitingList.toArray();
+
+        // Let the first process be the max size process
+        PCB maxPCB = (PCB) list[0];
+
+        for(int i = 1; i < list.length; i++) {
+            PCB currentPCB = (PCB) list[i];
+
+            // If current process size is greater than the max process
+            if(currentPCB.getSize() > maxPCB.getSize())
+                // Then, it is the new max process
+                maxPCB = currentPCB;
+        }
+
+        return maxPCB;
+    }
+
+    boolean isEmpty() { return waitingList.isEmpty(); }
+    PCB getCurrentProcess() { return currentProcess; }
     Queue<PCB> getWaitingList() { return waitingList; }
 }

@@ -14,15 +14,17 @@ public class OperatingSystem extends Thread {
     	CPU cpu = new CPU(io);
     	
 //        Clock clock =new Clock();
-    	
+
+        // Add processes to Job Queue
        for(PCB p : FileHandler.readFile()){
     	   size++;
     	   ram.addToJobQ(p);
        }
-       
-       ram.start();
-       io.start();
-       cpu.start();
+
+        io.start();
+        ram.start();
+        cpu.start();
+
 //       System.out.println(ram.);
        new OperatingSystem().start();
 	}
@@ -31,16 +33,14 @@ public class OperatingSystem extends Thread {
     public void run() {
     	while(true) {
     		if(finishedProcesses.size() == OperatingSystem.size) {
-    			System.out.println("FINISHED!!");
+    			System.out.println("FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     			// TODO remove exit
     			System.exit(0);
     		}
-    		
-    		System.out.println("Allocation: " + RAM.getWaitingQ().size());
-    		System.out.println("Ready: " + RAM.getReadyQ().size());
-    		System.out.println("IO: " + RAM.device.getWaitingList().size());
-    		System.out.println("FINISHED : "+finishedProcesses.size());
-    		
+
+            System.out.println("Finished num: " + finishedProcesses.size());
+            System.out.println("RAM Total Usage : " + RAM.getTotalRamUsage());
+            System.out.println("---------------------------");
     		try {
     			sleep(2000);
     		} catch (InterruptedException e) {

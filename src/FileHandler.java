@@ -13,7 +13,7 @@ public class FileHandler {
 		LinkedList<PCB> processes = new LinkedList<>();
 
 		try {
-			BufferedReader bfr = new BufferedReader(new FileReader("C:\\Users\\minea\\Desktop\\cpumemoryio.txt"));
+			BufferedReader bfr = new BufferedReader(new FileReader("C:\\Users\\Abdulmajeed\\Desktop\\cpumemoryio.txt"));
 			bfr.readLine();
 			while ((line = bfr.readLine()) != null) {
 
@@ -53,36 +53,34 @@ public class FileHandler {
 
 				CPUBurst currentBurst = (CPUBurst) bursts.peek();
 
-				PCB process = new PCB(pid, String.valueOf(pid), 0, currentBurst.getMemoryValue(), ProcessState.WAITING,
-						bursts);
+				PCB process = new PCB(pid, currentBurst.getMemoryValue(), bursts);
 
 				processes.add(process);
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 //		PCB underTest = processes.get(10);
 //		System.out.println("[ " + underTest.getPid() + " ]");
-//		
+//
 //		if(underTest.getCurrentBurst() instanceof CPUBurst)
 //			System.out.println("CPU ---"+ underTest.getCurrentBurst().getRemainingTime());
 //		else
 //			System.out.println("IO ---"+ underTest.getCurrentBurst().getRemainingTime());
-//		
+//
 //		for(Object obj : underTest.burstQueue.toArray()) {
-//			String type = "";
-//			
+//			String type;
+//
 //			Burst burst = (Burst) obj;
-//			
+//
 //			if(burst instanceof CPUBurst)
 //				type = "CPU";
 //			else
 //				type = "IO";
 //			System.out.println(type + " --- " + burst.getRemainingTime());
 //		}
+
 		return processes;
 
 	}

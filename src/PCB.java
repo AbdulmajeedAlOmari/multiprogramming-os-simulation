@@ -4,13 +4,12 @@ import java.util.Queue;
 
 public class PCB implements Comparable {
 	private int pid; //Process ID
-	private String name; //Program name
 	private int loadedTime; //When it was loaded in Ready queue
 
-	public int cpuCounter; //Number of times this process became in RUNNING state
-	public int ioCounter; //Number of times this process became in WAITING state
-	public int ioTotalTime; //Total time of executed IO burst
-	public int cpuTotalTime; //Total time of executed CPU burst
+	private int cpuCounter; //Number of times this process became in RUNNING state
+	private int ioCounter; //Number of times this process became in WAITING state
+	private int ioTotalTime; //Total time of executed IO burst
+	private int cpuTotalTime; //Total time of executed CPU burst
 	private int waitingCounter; //Number of times this process was waiting for memory space
 	private int finishedTime; //The time when this process TERMINATED/KILLED
 
@@ -21,10 +20,9 @@ public class PCB implements Comparable {
 	private Burst currentBurst; //The current burst in PCB (FCFS)
 	public Queue<Burst> burstQueue;
 
-	public PCB(int pid, String name, int loadedTime, int size, ProcessState processState, Queue<Burst> burstQueue) {
+	PCB(int pid, int size, Queue<Burst> burstQueue) {
 		this.pid = pid;
-		this.name = name;
-		this.loadedTime = loadedTime;
+		this.loadedTime = -1;
 
 		this.cpuCounter = 0;
 		this.ioCounter = 0;
@@ -34,7 +32,7 @@ public class PCB implements Comparable {
 		this.finishedTime = 0;
 
 		this.size = size;
-		this.processState = processState;
+		this.processState = ProcessState.WAITING;
 
 		//Set first element of the queue as currentBurst
 		this.currentBurst = burstQueue.poll();
@@ -58,8 +56,8 @@ public class PCB implements Comparable {
 	 * /////k. CPU Utilization/////
 	 */
 	public String toString() {
-		return "/——————————¦¦[ " + name + " ]¦¦——————————\\"
-				+ "» ID: " + pid + ". \n» CPU time: " + cpuTotalTime
+		return "/——————————¦¦[ " + pid + " ]¦¦——————————\\"
+				+"» CPU time: " + cpuTotalTime
 				+ " ms \n» Size: " + size + " Kb \n» IO: " + ioTotalTime + " ms.\n"
 				+ "\\———————————¦-_END_-¦———————————/";
 	}
@@ -80,6 +78,48 @@ public class PCB implements Comparable {
 		return this.currentBurst;
 	}
 
+	void killProcess() {
+		this.setFinishedTime(Clock.getCurrentMs());
+
+		this.setProcessState(ProcessState.KILLED);
+
+		RAM.subtractFromUsage(this.size);
+
+		OperatingSystem.addFinishedProcess(this);
+
+		System.out.println("(PCB) - KILLED PROCESS [" + pid + "].");
+	}
+
+	void terminateProcess() {
+		this.setFinishedTime(Clock.getCurrentMs());
+
+		this.setProcessState(ProcessState.TERMINATED);
+
+		RAM.subtractFromUsage(this.size);
+
+		OperatingSystem.addFinishedProcess(this);
+
+		System.out.println("(PCB) - TERMINATED PROCESS [" + pid + "].");
+	}
+
+	void letProcessWait() {
+		// Set its status to waiting
+		this.setProcessState(ProcessState.WAITING);
+
+		RAM.subtractFromUsage(this.size);
+
+		RAM.addToJobQ(this);
+
+		System.out.println("(PCB) - toWAIT PROCESS [" + pid + "].");
+	}
+
+	void letProcessReady() {
+		this.setProcessState(ProcessState.READY);
+
+		RAM.addToReadyQ(this);
+
+		System.out.println("(PCB) - toREADY PROCESS [" + pid + "].");
+	}
 
 	// Getters/Setters
 	void setLoadedTime(int loadedTime) { this.loadedTime = loadedTime; }
