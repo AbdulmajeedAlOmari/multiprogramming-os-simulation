@@ -67,7 +67,7 @@ public class FileHandler {
 		try {
 			// path to create your file
 			File file = new File(Utility.OUTPUT_FILE_PATH);
-	        
+
 			if(!file.exists()) {
 					file.createNewFile();	
 			}
@@ -81,7 +81,7 @@ public class FileHandler {
 			int i =0;
 			for (PCB p : finishedProcesses){
 			pw.println( ++i +"\t    " + p.getPid() + "\t\t   " + p.getLoadedTime() + "   \t\t " + p.getCpuCounter() + " \t\t " + p.getCpuTotalTime() + " \t\t " + p.getIoCounter() + " \t\t" + p.getIoTotalTime() +
-					" \t\t\t  " + p.getWaitingCounter() + "\t\t\t" + "" + p.getFinishedTime() + "\t " + p.getProcessState() );
+					" \t\t\t  " + p.getMemoryCounter() + "\t\t\t" + "" + p.getFinishedTime() + "\t " + p.getProcessState() );
 			pw.println();
 			}
 				pw.println("\t\t\t //���������������������-_END_-���������������������\\\\");

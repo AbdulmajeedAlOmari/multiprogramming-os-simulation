@@ -11,7 +11,7 @@ public class PCB implements Comparable {
 	private int memoryCounter; //Number of times this process requested memory allocation
 	private int ioTotalTime; //Total time of executed IO burst
 	private int cpuTotalTime; //Total time of executed CPU burst
-	private int waitingCounter; //Number of times this process was waiting for memory space
+//	private int waitingCounter; //Number of times this process was waiting for memory space
 	private int finishedTime; //The time when this process TERMINATED/KILLED
 
 	private ProcessState processState; //Process State
@@ -28,8 +28,9 @@ public class PCB implements Comparable {
 		this.cpuCounter = 0;
 		this.ioCounter = 0;
 		this.ioTotalTime = 0;
+		this.memoryCounter = 0;
 		this.cpuTotalTime = 0;
-		this.waitingCounter = 0;
+//		this.waitingCounter = 0;
 		this.finishedTime = 0;
 
 		this.size = size;
@@ -119,7 +120,6 @@ public class PCB implements Comparable {
 	void incrementMemoryCounter() { this.memoryCounter++; }
 	void incrementIoTotalTime() { this.ioTotalTime++; }
 	void incrementCpuTotalTime() { this.cpuTotalTime++; }
-	void incrementWaitingCounter() { this.waitingCounter++; }
 	void setFinishedTime(int finishedTime) { this.finishedTime = finishedTime; }
 
 	ProcessState getProcessState() { return processState; }
@@ -143,15 +143,8 @@ public class PCB implements Comparable {
 	int getCpuTotalTime() {
 		return cpuTotalTime;
 	}
-	int getWaitingCounter() {
-		return waitingCounter;
-	}
-	int getLoadedTime() {
-		return loadedTime;
-	}
-	int getFinishedTime() {
-		return finishedTime;
-	}
+	int getLoadedTime() { return loadedTime; }
+	int getFinishedTime() { return finishedTime; }
 
 	
 }
