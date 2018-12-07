@@ -99,7 +99,7 @@ public class RAM extends Thread {
 			gui.addToDataset(Clock.getCurrentMs(), totalRamUsage);
 
 		// Time to sleep...
-		sleep(200);
+		sleep(Utility.TIME * 200);
 	}
 
 	static boolean subtractFromUsage(int size) {

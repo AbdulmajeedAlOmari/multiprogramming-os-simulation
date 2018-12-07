@@ -26,9 +26,11 @@ class LineChart extends JFrame /*implements Runnable*/ {
         series = new XYSeries("RAM Usage");
 
         series.add(0, 0);
+
+        init();
     }
 
-    void addToDataset(int currentTime, int currentSize) {
+    synchronized void addToDataset(int currentTime, int currentSize) {
 
         series.add(currentTime, currentSize);
 

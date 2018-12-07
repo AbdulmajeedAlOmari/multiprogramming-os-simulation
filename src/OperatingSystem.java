@@ -3,7 +3,6 @@ import java.util.LinkedList;
 public class OperatingSystem extends Thread {
     private static LinkedList<PCB> finishedProcesses = new LinkedList<>();
     private static int size = 0;
-    private static boolean isFinished = false;
     private static IODevice io;
     private static RAM ram;
     private static CPU cpu;
@@ -50,7 +49,7 @@ public class OperatingSystem extends Thread {
                 stopAllThreads();
     		    FileHandler.writeFile(finishedProcesses);
 
-    		    gui.init();
+//    		    gui.init();
 
                 this.stop();
     		}
@@ -78,6 +77,4 @@ public class OperatingSystem extends Thread {
     static void addFinishedProcess(PCB process) {
         finishedProcesses.add(process);
     }
-    static boolean isFinished() { return isFinished; }
-    static void saveMemoryState() {}
 }

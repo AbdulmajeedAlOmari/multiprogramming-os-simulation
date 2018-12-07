@@ -22,14 +22,11 @@ public class CPU extends Thread {
     public void run() {
         while(true) {
             currentActiveProcess = RAM.getReadyQ().poll();
-//            System.out.println("ReadyQSize: " + RAM.getReadyQ().size());
-//            System.out.println("RAM usage : " + RAM.getUsage());
-//            System.out.println("RAM usageA : " + RAM.getUsageA());
             if(currentActiveProcess != null) {
                 handleCurrentProcess();
             } else {
                 try {
-                    sleep(1);
+                    sleep(Utility.TIME);
                 } catch(InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -38,9 +35,7 @@ public class CPU extends Thread {
                 Clock.incrementMs();
 
                 // Increment CPU idle time
-                if(!OperatingSystem.isFinished()) {
-                    CPU.idleTime++;
-                }
+                CPU.idleTime++;
             }
         }
     }
@@ -70,8 +65,8 @@ public class CPU extends Thread {
             CPU.busyTime++;
 
             try {
-                //Wait for 1 millisecond before proceeding
-                sleep(1);
+                //Wait for x millisecond before proceeding
+                sleep(Utility.TIME);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
