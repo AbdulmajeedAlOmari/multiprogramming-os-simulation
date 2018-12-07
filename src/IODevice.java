@@ -27,9 +27,9 @@ public class IODevice extends Thread {
             if(currentProcess != null) {
                 handleIORequest();
             } else {
-                //sleep for 1 millisecond
+                //sleep for x millisecond
                 try {
-                    sleep(1);
+                    sleep(Utility.TIME);
                 } catch(InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -53,8 +53,8 @@ public class IODevice extends Thread {
 
 //            System.out.print(currentProcess.getCurrentBurst().getRemainingTime()+"\t");
             try {
-                //Wait for 1 millisecond
-                sleep(1);
+                //Wait for x millisecond
+                sleep(Utility.TIME);
             } catch(InterruptedException e) {
                 e.printStackTrace();
             }

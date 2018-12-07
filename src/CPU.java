@@ -7,9 +7,12 @@ public class CPU extends Thread {
     private PCB currentActiveProcess;
     private static int busyTime;
     private static int idleTime;
+    private LineChart gui;
 
-    CPU(IODevice ioDevice) {
+    CPU(IODevice ioDevice, LineChart gui) {
         this.ioDevice = ioDevice;
+        this.gui = gui;
+
         this.currentActiveProcess = null;
         CPU.busyTime = 0;
         CPU.idleTime = 0;
@@ -19,14 +22,11 @@ public class CPU extends Thread {
     public void run() {
         while(true) {
             currentActiveProcess = RAM.getReadyQ().poll();
-//            System.out.println("ReadyQSize: " + RAM.getReadyQ().size());
-//            System.out.println("RAM usage : " + RAM.getUsage());
-//            System.out.println("RAM usageA : " + RAM.getUsageA());
             if(currentActiveProcess != null) {
                 handleCurrentProcess();
             } else {
                 try {
-                    sleep(1);
+                    sleep(Utility.TIME);
                 } catch(InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -35,8 +35,7 @@ public class CPU extends Thread {
                 Clock.incrementMs();
 
                 // Increment CPU idle time
-                if(!OperatingSystem.isFinished())
-                    CPU.idleTime++;
+                CPU.idleTime++;
             }
         }
     }
@@ -66,8 +65,8 @@ public class CPU extends Thread {
             CPU.busyTime++;
 
             try {
-                //Wait for 1 millisecond before proceeding
-                sleep(1);
+                //Wait for x millisecond before proceeding
+                sleep(Utility.TIME);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -93,6 +92,9 @@ public class CPU extends Thread {
         // Calculate its new memory value
         int memoryValue = cpuBurst.getMemoryValue();
 
+        // Save old ram usage
+        int oldTotalRamUsage = RAM.getTotalRamUsage();
+
         if(memoryValue != 0)
             RAM.handleMemoryValue(process, memoryValue);
 
@@ -102,6 +104,10 @@ public class CPU extends Thread {
             process.setProcessState(ProcessState.WAITING);
             ioDevice.addProcessToDevice(this.currentActiveProcess);
         }
+
+        // Save current ram usage info in gui
+        if(oldTotalRamUsage != RAM.getTotalRamUsage())
+            gui.addToDataset(Clock.getCurrentMs(), RAM.getTotalRamUsage());
     }
 
     static int getBusyTime() { return CPU.busyTime; }
