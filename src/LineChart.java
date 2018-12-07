@@ -30,7 +30,7 @@ class LineChart extends JFrame /*implements Runnable*/ {
 
     void addToDataset(int currentTime, int currentSize) {
 
-        series.add(currentSize, currentSize);
+        series.add(currentTime, currentSize);
 
 //        if(Utility.DEBUG_MODE)
             System.out.println(currentTime+ " , " + currentSize);
@@ -48,6 +48,11 @@ class LineChart extends JFrame /*implements Runnable*/ {
         setTitle("RAM Usage");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        SwingUtilities.invokeLater(() -> {
+            LineChart ex = this;
+            ex.setVisible(true);
+        });
     }
 
     private XYDataset createDataset() {
@@ -59,9 +64,9 @@ class LineChart extends JFrame /*implements Runnable*/ {
 
     private JFreeChart createChart(XYDataset dataset) {
         JFreeChart chart = ChartFactory.createXYLineChart(
-                "RAM Usage per MS",
-                "Time MS",
-                "Size",
+                "RAM Usage per millisecond",
+                "Time (ms)",
+                "Size (MB)",
                 dataset,
                 PlotOrientation.VERTICAL,
                 true,
@@ -86,7 +91,7 @@ class LineChart extends JFrame /*implements Runnable*/ {
 
         chart.getLegend().setFrame(BlockBorder.NONE);
 
-        chart.setTitle(new TextTitle("RAM Usage per MS",
+        chart.setTitle(new TextTitle("RAM Usage per millisecond",
                         new Font("Serif", java.awt.Font.BOLD, 18)
                 )
         );
@@ -96,9 +101,8 @@ class LineChart extends JFrame /*implements Runnable*/ {
     }
 
 //    public static void main(String[] args) {
-//
 //        SwingUtilities.invokeLater(() -> {
-//            LineChartEx ex = new LineChartEx();
+//            LineChart ex = new LineChart();
 //            ex.setVisible(true);
 //        });
 //    }

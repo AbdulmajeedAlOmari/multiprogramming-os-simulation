@@ -7,9 +7,12 @@ public class CPU extends Thread {
     private PCB currentActiveProcess;
     private static int busyTime;
     private static int idleTime;
+    private LineChart gui;
 
-    CPU(IODevice ioDevice) {
+    CPU(IODevice ioDevice, LineChart gui) {
         this.ioDevice = ioDevice;
+        this.gui = gui;
+
         this.currentActiveProcess = null;
         CPU.busyTime = 0;
         CPU.idleTime = 0;
@@ -35,8 +38,9 @@ public class CPU extends Thread {
                 Clock.incrementMs();
 
                 // Increment CPU idle time
-                if(!OperatingSystem.isFinished())
+                if(!OperatingSystem.isFinished()) {
                     CPU.idleTime++;
+                }
             }
         }
     }
@@ -93,6 +97,9 @@ public class CPU extends Thread {
         // Calculate its new memory value
         int memoryValue = cpuBurst.getMemoryValue();
 
+        // Save old ram usage
+        int oldTotalRamUsage = RAM.getTotalRamUsage();
+
         if(memoryValue != 0)
             RAM.handleMemoryValue(process, memoryValue);
 
@@ -102,6 +109,10 @@ public class CPU extends Thread {
             process.setProcessState(ProcessState.WAITING);
             ioDevice.addProcessToDevice(this.currentActiveProcess);
         }
+
+        // Save current ram usage info in gui
+        if(oldTotalRamUsage != RAM.getTotalRamUsage())
+            gui.addToDataset(Clock.getCurrentMs(), RAM.getTotalRamUsage());
     }
 
     static int getBusyTime() { return CPU.busyTime; }

@@ -13,10 +13,12 @@ public class RAM extends Thread {
 	private static int totalRamUsage;
 
 	private static IODevice device;
+	private static LineChart gui;
 
-	RAM(IODevice device) {
+	RAM(IODevice device, LineChart gui) {
 		RAM.totalRamUsage = 0;
 		RAM.device = device;
+		RAM.gui = gui;
 	}
 
 	@Override
@@ -42,10 +44,14 @@ public class RAM extends Thread {
 	
 	// to add new process   
 	void longTermScheduler() throws InterruptedException {
+		// Save old ram usage info
+		int oldTotalRamUsage = totalRamUsage;
+
 		synchronized (device) {
 			// Stop the device temporarly
 			Thread.sleep(5);
 		}
+
 
 		// Check for deadlock
 		if(!waitingForAllocation.isEmpty()
@@ -58,8 +64,6 @@ public class RAM extends Thread {
 			
 			PCB maxProcess = device.getMaxProcess();
 			device.killProcessFromIOQueue(maxProcess);
-			
-
 		}
 
 		synchronized (device) {
@@ -90,12 +94,15 @@ public class RAM extends Thread {
 			
 			totalRamUsage += process.getSize();
 		}
-		
+
+		if(totalRamUsage != oldTotalRamUsage)
+			gui.addToDataset(Clock.getCurrentMs(), totalRamUsage);
+
 		// Time to sleep...
 		sleep(200);
 	}
 
-	synchronized static boolean subtractFromUsage(int size) {
+	static boolean subtractFromUsage(int size) {
 		// Check if we have enough UsageA to subtract from
 		if(totalRamUsage - size < 0) {
 			return false;
@@ -103,16 +110,6 @@ public class RAM extends Thread {
 
 		// Subtract it
 		totalRamUsage -= size;
-
-		return true;
-	}
-
-	synchronized static boolean forceAddToRamUsage(int size) {
-		if(totalRamUsage + size > RAM_SIZE + ADDITIONAL_RAM_SIZE) {
-			return false;
-		}
-
-		totalRamUsage += size;
 
 		return true;
 	}
@@ -127,12 +124,22 @@ public class RAM extends Thread {
 		}
 
 		// Check if enough RAM is available
-		if(!forceAddToRamUsage(memoryValue)) {
+		if(!addToRamUsage(memoryValue)) {
 			process.letProcessWait();
 		}
 
 		// Change process size to newSize
 		process.setSize(newSize);
+	}
+
+	private synchronized static boolean addToRamUsage(int size) {
+		if(totalRamUsage + size > RAM_SIZE + ADDITIONAL_RAM_SIZE) {
+			return false;
+		}
+
+		totalRamUsage += size;
+
+		return true;
 	}
 
 	private boolean isEnough(int size) {
