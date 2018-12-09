@@ -1,6 +1,6 @@
 import java.util.LinkedList;
 
-public class OperatingSystem extends Thread {
+public class OperatingSystem {
     private static LinkedList<PCB> finishedProcesses = new LinkedList<>();
     private static int size = 0;
     private static IODevice io;
@@ -28,53 +28,27 @@ public class OperatingSystem extends Thread {
        cpu.start();
        ram.start();
        io.start();
-
-        // Run GUI thread
-//        GUI gui = new GUI();
-//        Thread t = new Thread(gui);
-//        t.start();
-
-       new OperatingSystem().start();
 	}
 
-    @Override
-    public void run() {
-    	while(true) {
-    		if(finishedProcesses.size() == OperatingSystem.size) {
-    		    if(Utility.DEBUG_MODE) {
-                    System.out.println("\t\tFINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    System.out.println("Finished num: " + finishedProcesses.size());
-                    System.out.println("RAM Total Usage : " + RAM.getTotalRamUsage());
-                }
-                stopAllThreads();
-    		    FileHandler.writeFile(finishedProcesses);
+	static void stopOS() {
+        try {
+            sleepAllThreads();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-//    		    gui.init();
+        FileHandler.writeFile(finishedProcesses);
+        System.out.println("Multiprogramming Operating System Simulation - [ Finished ]");
+    }
 
-                this.stop();
-    		}
-
-    		if(Utility.DEBUG_MODE) {
-                System.out.println("Finished num: " + finishedProcesses.size());
-                System.out.println("RAM Total Usage : " + RAM.getTotalRamUsage());
-                System.out.println("---------------------------");
-            }
-
-    		try {
-    			sleep(1);
-    		} catch (InterruptedException e) {
-    			e.printStackTrace();
-    		}
-    	}
-    };
-
-    private void stopAllThreads() {
-        io.stop();
-        ram.stop();
-        cpu.stop();
+    private static void sleepAllThreads() throws InterruptedException {
+        io.sleep(1000);
+        ram.sleep(1000);
+        cpu.sleep(1000);
     }
 
     static void addFinishedProcess(PCB process) {
         finishedProcesses.add(process);
     }
+    static boolean isFullyFinished() { return OperatingSystem.size == OperatingSystem.finishedProcesses.size(); }
 }
