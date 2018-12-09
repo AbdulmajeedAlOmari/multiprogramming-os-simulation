@@ -54,11 +54,7 @@ public class RAM extends Thread {
 
 
 		// Check for deadlock
-		if(!waitingForAllocation.isEmpty()
-				&& readyQ.isEmpty()
-				&& !isEnough(waitingForAllocation.peek().getSize())
-				&& !device.isEmpty()) {
-
+		if(isDeadlock()) {
 			if(Utility.DEBUG_MODE)
 				System.out.println("Deadlock solved for: [ " + waitingForAllocation.peek().getPid() + " ]");
 			
@@ -146,6 +142,12 @@ public class RAM extends Thread {
 		return totalRamUsage + size <= RAM_SIZE;
 	}
 
+	private boolean isDeadlock() {
+		return !waitingForAllocation.isEmpty()
+				&& readyQ.isEmpty()
+				&& !isEnough(waitingForAllocation.peek().getSize())
+				&& !device.isEmpty();
+	}
 	//This method retrieve but not remove from Queue
 	static PCB retrieve(){
 		return readyQ.peek();
