@@ -37,6 +37,9 @@ public class OperatingSystem {
             e.printStackTrace();
         }
 
+        // Add the last size of memory ( ZERO )
+        gui.addToDataset(Clock.getCurrentMs(), RAM.getTotalRamUsage());
+
         FileHandler.writeFile(finishedProcesses);
         System.out.println("Multiprogramming Operating System Simulation - [ Finished ]");
     }
