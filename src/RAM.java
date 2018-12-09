@@ -98,16 +98,14 @@ public class RAM extends Thread {
 		sleep(Utility.TIME * 200);
 	}
 
-	static boolean subtractFromUsage(int size) {
+	synchronized static void subtractFromUsage(int size) {
 		// Check if we have enough UsageA to subtract from
 		if(totalRamUsage - size < 0) {
-			return false;
+			return;
 		}
 
 		// Subtract it
 		totalRamUsage -= size;
-
-		return true;
 	}
 
 	synchronized static void handleMemoryValue(PCB process, int memoryValue) {

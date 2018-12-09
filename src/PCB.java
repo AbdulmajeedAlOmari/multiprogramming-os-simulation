@@ -74,6 +74,9 @@ public class PCB implements Comparable {
 
 		OperatingSystem.addFinishedProcess(this);
 
+		if(OperatingSystem.isFullyFinished())
+			OperatingSystem.stopOS();
+
 		if(Utility.DEBUG_MODE)
 			System.out.println("(PCB) - KILLED PROCESS [" + pid + "].");
 	}
@@ -86,6 +89,9 @@ public class PCB implements Comparable {
 		RAM.subtractFromUsage(this.size);
 
 		OperatingSystem.addFinishedProcess(this);
+
+		if(OperatingSystem.isFullyFinished())
+			OperatingSystem.stopOS();
 
 		if(Utility.DEBUG_MODE)
 			System.out.println("(PCB) - TERMINATED PROCESS [" + pid + "].");

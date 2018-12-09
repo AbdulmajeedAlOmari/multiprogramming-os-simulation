@@ -4,7 +4,7 @@
 public class Utility {
 
     // Time in (ms) per CPU clock
-    static final int TIME = 10;
+    static final int TIME = 1;
 
     // The input file full path
     static final String INPUT_FILE_PATH = "C:\\Users\\Abdulmajeed\\Desktop\\cpumemoryio.txt";
