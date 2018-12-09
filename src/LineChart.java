@@ -31,11 +31,7 @@ class LineChart extends JFrame /*implements Runnable*/ {
     }
 
     synchronized void addToDataset(int currentTime, int currentSize) {
-
         series.add(currentTime, currentSize);
-
-//        if(Utility.DEBUG_MODE)
-            System.out.println(currentTime+ " , " + currentSize);
     }
 
     void init() {
